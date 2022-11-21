@@ -1,0 +1,14 @@
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\bin\Debug\EsportsDatabase.exe.config
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\bin\Debug\EsportsDatabase.exe
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\bin\Debug\EsportsDatabase.pdb
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.AssemblyReference.cache
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.SuggestedBindingRedirects.cache
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\obj\Debug\EsportsDatabase.Properties.Resources.resources
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.GenerateResource.cache
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.CoreCompileInputs.cache
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\obj\Debug\EsportsDatabase.exe
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\obj\Debug\EsportsDatabase.pdb
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\obj\Debug\EsportsDatabase.EsportsDatabase.resources
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\bin\Debug\System.Data.SQLite.dll
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\bin\Debug\System.Data.SQLite.xml
+C:\Users\Logan Hutchens\OneDrive\Desktop\College\Junior\Introduction to Database Systems\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.CopyComplete
