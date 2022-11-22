@@ -25,6 +25,15 @@ namespace EsportsDatabase
             InitializeComponent();
         }
 
+        private void EsportsDatabase_Load(object sender, EventArgs e)
+        {
+
+            CreateDB();
+            table = this.SelectTable.SelectedTab.Text;
+            DataShow(table);
+
+        }
+
         private void DataShow(string table)
         {
             displayTable.Rows.Clear();
@@ -169,23 +178,90 @@ namespace EsportsDatabase
             DataShow(table);
         }
 
-        private void EsportsDatabase_Load(object sender, EventArgs e)
-        {
-            
-            CreateDB();
-            table = this.SelectTable.SelectedTab.Text;
-            DataShow(table);
-
-        }
-
         private void UpdateBtn_Click(object sender, EventArgs e)
         {
+            try
+            {
+                var con = new SQLiteConnection(cs);
+                con.Open();
+                var cmd = new SQLiteCommand(con);
 
+                if (table == "Teams")
+                {
+
+                }
+                else if (table == "Games")
+                {
+                    cmd.CommandText = "UPDATE Games SET Name = @name, Device = @device, Type = @type, NumberOfPlayers = @numPlayers WHERE GameID = @gameID";
+                    
+                    cmd.Parameters.AddWithValue("@gameID", gameIDInput.Text);
+                    cmd.Parameters.AddWithValue("@name", gameNameInput.Text);
+                    cmd.Parameters.AddWithValue("@device", gameDeviceInput.Text);
+                    cmd.Parameters.AddWithValue("@type", gameNameInput.Text);
+                    cmd.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));
+                }
+                else if (table == "Players")
+                {
+
+                }
+                else if (table == "Rosters")
+                {
+
+                }
+                else if (table == "Events")
+                {
+
+                }
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Data update failed");
+            }
+
+            DataShow(table);
         }
 
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
+            try
+            {
+                var con = new SQLiteConnection(cs);
+                con.Open();
+                var cmd = new SQLiteCommand(con);
 
+                if (table == "Teams")
+                {
+
+                }
+                else if (table == "Games")
+                {
+                    cmd.CommandText = "DELETE FROM Games WHERE GameID = @gameID";
+
+                    cmd.Parameters.AddWithValue("@gameID", gameIDInput.Text);
+                }
+                else if (table == "Players")
+                {
+
+                }
+                else if (table == "Rosters")
+                {
+
+                }
+                else if (table == "Events")
+                {
+
+                }
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Data update failed");
+            }
+
+            DataShow(table);
         }
         private void SelectTable_Selected(object sender, EventArgs e)
         {

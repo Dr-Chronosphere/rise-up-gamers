@@ -48,6 +48,7 @@
             this.Players = new System.Windows.Forms.TabPage();
             this.Rosters = new System.Windows.Forms.TabPage();
             this.Events = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.displayTable)).BeginInit();
             this.SelectTable.SuspendLayout();
             this.Games.SuspendLayout();
@@ -183,6 +184,7 @@
             // 
             // Games
             // 
+            this.Games.Controls.Add(this.label1);
             this.Games.Controls.Add(this.gameIDInput);
             this.Games.Controls.Add(this.gameIDLabel);
             this.Games.Controls.Add(this.gameNumberOfPlayersPerTeamInput);
@@ -247,6 +249,15 @@
             this.Events.Text = "Events";
             this.Events.UseVisualStyleBackColor = true;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(276, 30);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(134, 16);
+            this.label1.TabIndex = 18;
+            this.label1.Text = "for update and delete";
+            // 
             // EsportsDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -290,6 +301,7 @@
         private System.Windows.Forms.TabPage Rosters;
         private System.Windows.Forms.TabPage Events;
         private System.Windows.Forms.TabControl SelectTable;
+        private System.Windows.Forms.Label label1;
     }
 }
 
