@@ -173,7 +173,9 @@ namespace EsportsDatabase
         {
             
             CreateDB();
-            
+            table = this.SelectTable.SelectedTab.Text;
+            DataShow(table);
+
         }
 
         private void UpdateBtn_Click(object sender, EventArgs e)
@@ -185,32 +187,9 @@ namespace EsportsDatabase
         {
 
         }
-        private void Teams_Click(object sender, EventArgs e)
+        private void SelectTable_Selected(object sender, EventArgs e)
         {
-            table = "Teams";
-            DataShow(table);
-        }
-        private void Games_Click(object sender, EventArgs e)
-        {
-            table = "Games";
-            DataShow(table);
-        }
-
-        private void Players_Click(object sender, EventArgs e)
-        {
-            table = "Players";
-            DataShow(table);
-        }
-
-        private void Rosters_Click(object sender, EventArgs e)
-        {
-            table = "Rosters";
-            DataShow(table);
-        }
-
-        private void Events_Click(object sender, EventArgs e)
-        {
-            table = "Events";
+            table = this.SelectTable.SelectedTab.Text;
             DataShow(table);
         }
     }

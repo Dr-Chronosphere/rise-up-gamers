@@ -169,6 +169,7 @@
             this.SelectTable.SelectedIndex = 0;
             this.SelectTable.Size = new System.Drawing.Size(436, 233);
             this.SelectTable.TabIndex = 16;
+            this.SelectTable.Selected += new System.Windows.Forms.TabControlEventHandler(this.SelectTable_Selected);
             // 
             // Teams
             // 
@@ -179,7 +180,6 @@
             this.Teams.TabIndex = 0;
             this.Teams.Text = "Teams";
             this.Teams.UseVisualStyleBackColor = true;
-            this.Teams.Click += new System.EventHandler(this.Teams_Click);
             // 
             // Games
             // 
@@ -200,7 +200,6 @@
             this.Games.TabIndex = 1;
             this.Games.Text = "Games";
             this.Games.UseVisualStyleBackColor = true;
-            this.Games.Click += new System.EventHandler(this.Games_Click);
             // 
             // gameIDInput
             // 
@@ -227,7 +226,6 @@
             this.Players.TabIndex = 2;
             this.Players.Text = "Players";
             this.Players.UseVisualStyleBackColor = true;
-            this.Players.Click += new System.EventHandler(this.Players_Click);
             // 
             // Rosters
             // 
@@ -238,7 +236,6 @@
             this.Rosters.TabIndex = 3;
             this.Rosters.Text = "Rosters";
             this.Rosters.UseVisualStyleBackColor = true;
-            this.Rosters.Click += new System.EventHandler(this.Rosters_Click);
             // 
             // Events
             // 
@@ -249,7 +246,6 @@
             this.Events.TabIndex = 4;
             this.Events.Text = "Events";
             this.Events.UseVisualStyleBackColor = true;
-            this.Events.Click += new System.EventHandler(this.Events_Click);
             // 
             // EsportsDatabase
             // 
@@ -286,7 +282,6 @@
         private System.Windows.Forms.Label typeLabel;
         private System.Windows.Forms.Label deviceLabel;
         private System.Windows.Forms.TextBox gameDeviceInput;
-        private System.Windows.Forms.TabControl SelectTable;
         private System.Windows.Forms.TabPage Teams;
         private System.Windows.Forms.TabPage Games;
         private System.Windows.Forms.TextBox gameIDInput;
@@ -294,6 +289,7 @@
         private System.Windows.Forms.TabPage Players;
         private System.Windows.Forms.TabPage Rosters;
         private System.Windows.Forms.TabPage Events;
+        private System.Windows.Forms.TabControl SelectTable;
     }
 }
 
