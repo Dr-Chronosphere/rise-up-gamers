@@ -1,0 +1,4 @@
+C:\Users\Logan Hutchens\Source\Repos\Dr-Chronosphere\rise-up-gamers\obj\Debug\EsportsDatabase.csproj.AssemblyReference.cache
+C:\Users\Logan Hutchens\Source\Repos\Dr-Chronosphere\rise-up-gamers\obj\Debug\EsportsDatabase.csproj.SuggestedBindingRedirects.cache
+C:\Users\Logan Hutchens\Source\Repos\Dr-Chronosphere\rise-up-gamers\obj\Debug\EsportsDatabase.EsportsDatabase.resources
+C:\Users\Logan Hutchens\Source\Repos\Dr-Chronosphere\rise-up-gamers\obj\Debug\EsportsDatabase.csproj.GenerateResource.cache

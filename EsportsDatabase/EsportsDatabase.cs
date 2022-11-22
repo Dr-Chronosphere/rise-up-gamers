@@ -15,6 +15,7 @@ namespace EsportsDatabase
     {
         string path = "Esports.db";
         string cs = @"URI=file:" + Application.StartupPath + "\\Esports.db";
+        string table;
 
         SQLiteConnection con;
         SQLiteCommand cmd;
@@ -30,19 +31,26 @@ namespace EsportsDatabase
             con = new SQLiteConnection(cs);
             con.Open();
 
-            string sql = "SELECT * FROM Games";
+            string sql = "SELECT * FROM " + table;
             cmd = new SQLiteCommand(sql, con);
             dr = cmd.ExecuteReader();
 
+
+            displayTable.ColumnCount = dr.FieldCount;
+            for (int i = 0; i < dr.FieldCount; i++)
+            {
+                displayTable.Columns[i].Name = dr.GetName(i);
+            }
+
+            object[] values;
             while (dr.Read())
             {
-                displayTable.ColumnCount = 5;
-                displayTable.Columns[0].Name = "GameID";
-                displayTable.Columns[1].Name = "Name";
-                displayTable.Columns[2].Name = "Device";
-                displayTable.Columns[3].Name = "Type";
-                displayTable.Columns[4].Name = "Number of Players per Team";
-                displayTable.Rows.Add(dr.GetInt32(0), dr.GetString(1), dr.GetString(2), dr.GetString(3), dr.GetInt32(4));            
+                values = new object[dr.FieldCount];
+                for(int i = 0; i < dr.FieldCount; i++)
+                {
+                    values[i] = dr.GetValue(i);
+                }
+                displayTable.Rows.Add(values);            
             }
 
         }
@@ -117,26 +125,39 @@ namespace EsportsDatabase
             }
         }
 
-        private void SelectTable_SelectedValueChanged(object sender, EventArgs e)
-        {
-            string table = (string)SelectTable.SelectedItem;
-            DataShow(table);
-        }
-
         private void InsertBtn_Click(object sender, EventArgs e)
         {
-            string table = (string)SelectTable.SelectedItem;
             try
             {
                 var con = new SQLiteConnection(cs);
                 con.Open();
                 var cmd = new SQLiteCommand(con);
-                cmd.CommandText = "INSERT INTO Games(Name, Device, Type, NumberOfPlayers) VALUES(@name, @device, @type, @numPlayers)";
+                
+                if(table == "Teams")
+                {
 
-                cmd.Parameters.AddWithValue("@name", gameNameInput.Text);
-                cmd.Parameters.AddWithValue("@device", gameDeviceInput.Text);
-                cmd.Parameters.AddWithValue("@type", gameNameInput.Text);
-                cmd.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));
+                }
+                else if(table == "Games")
+                {
+                    cmd.CommandText = "INSERT INTO Games(Name, Device, Type, NumberOfPlayers) VALUES(@name, @device, @type, @numPlayers)";
+
+                    cmd.Parameters.AddWithValue("@name", gameNameInput.Text);
+                    cmd.Parameters.AddWithValue("@device", gameDeviceInput.Text);
+                    cmd.Parameters.AddWithValue("@type", gameNameInput.Text);
+                    cmd.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));
+                }
+                else if (table == "Players")
+                {
+
+                }
+                else if (table == "Rosters")
+                {
+
+                }
+                else if (table == "Events")
+                {
+
+                }
 
                 cmd.ExecuteNonQuery();
             }
@@ -163,6 +184,34 @@ namespace EsportsDatabase
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
 
+        }
+        private void Teams_Click(object sender, EventArgs e)
+        {
+            table = "Teams";
+            DataShow(table);
+        }
+        private void Games_Click(object sender, EventArgs e)
+        {
+            table = "Games";
+            DataShow(table);
+        }
+
+        private void Players_Click(object sender, EventArgs e)
+        {
+            table = "Players";
+            DataShow(table);
+        }
+
+        private void Rosters_Click(object sender, EventArgs e)
+        {
+            table = "Rosters";
+            DataShow(table);
+        }
+
+        private void Events_Click(object sender, EventArgs e)
+        {
+            table = "Events";
+            DataShow(table);
         }
     }
 }
