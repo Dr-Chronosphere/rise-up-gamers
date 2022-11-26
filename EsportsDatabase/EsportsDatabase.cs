@@ -15,6 +15,8 @@ namespace EsportsDatabase
     {
         public EsportsDatabase()
         {
+            // Much easier constructor-based database initialization.
+            // Consider making database constructor alter/add to existing database object.
             database = new Database("Esports.db",
                 @"CREATE TABLE Teams(
                     TeamID INTEGER PRIMARY KEY NOT NULL,
@@ -59,14 +61,20 @@ namespace EsportsDatabase
                     FOREIGN KEY (GameID) REFERENCES Games(GameID)
                 );"
             );
+            // WinForms Designer Generator
             InitializeComponent();
+
+            // Put our modifications here:
             InitializeTabs();
         }
 
+        // A testing function for programmatically generating the tab headers and content.
+        // TODO: gather all database fields and generate the tab page based on it. 
         public void InitializeTabs()
         {
             foreach (Table Table in database.Tables)
             {
+                // TODO: make Table class store their attributes for easy manipulation
                 FlowLayoutPanel flow = new FlowLayoutPanel();
                 Label label = new Label();
                 label.Text = "stuff";
@@ -79,12 +87,14 @@ namespace EsportsDatabase
             }
         }
 
+        // A wrapper class for Database CRUD functionality
+        // TODO: look into making a factory class
         public class Database
         {
             public Database(string filename, params string[] creationSQL)
             {
                 _filename = filename;
-                _path = @"URI=file:" + Application.StartupPath + @"\" + _filename;
+                _path = "URI=file:" + Application.StartupPath + "\\" + _filename;
                 _creationSQL = creationSQL;
                 Connection = new SQLiteConnection(_path);
                 Connection.Open();
@@ -142,6 +152,8 @@ namespace EsportsDatabase
             private static string _path;
         }
 
+        // Potentially make the Database class have a list of Table objects,
+        // where each Table is initialized by the Database constructor
         public class Table
         {
             public Table(string name)
@@ -155,11 +167,13 @@ namespace EsportsDatabase
 
         }
 
+        // Not sure what calls this particular function...
         private void EsportsDatabase_Load(object sender, EventArgs e)
         {
             ShowData(this.SelectTable.SelectedTab.Text);
         }
 
+        // I didn't touch this other than referencing the singleton database object.
         private void ShowData(string table)
         {
             displayTable.Rows.Clear();
@@ -185,11 +199,12 @@ namespace EsportsDatabase
                 }
                 displayTable.Rows.Add(values);            
             }
-
         }
 
+        // All the following buttons will be greatly condensed by a generalized function call.
         private void InsertBtn_Click(object sender, EventArgs e)
         {
+            // TODO: These will not be if statements, but a function call to a generalized insert function
             try
             {
                 if(database.ActiveTable == "Teams")
