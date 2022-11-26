@@ -13,260 +13,302 @@ namespace EsportsDatabase
 {
     public partial class EsportsDatabase : Form
     {
-        string path = "Esports.db";
-        string cs = @"URI=file:" + Application.StartupPath + "\\Esports.db";
-        string table;
-
-        SQLiteConnection con;
-        SQLiteCommand cmd;
-        SQLiteDataReader dr;
         public EsportsDatabase()
         {
+            database = new Database("Esports.db",
+                @"CREATE TABLE Teams(
+                    TeamID INTEGER PRIMARY KEY NOT NULL,
+                    Name TEXT, 
+                    GameID INTEGER,
+                    Location TEXT,
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID)
+                );",
+                @"CREATE TABLE Games(
+                    GameID INTEGER PRIMARY KEY NOT NULL,
+                    Name TEXT,
+                    Device TEXT,
+                    Type TEXT,
+                    NumberOfPlayers INTEGER
+                );",
+                @"CREATE TABLE Players(
+                    PlayerID INTEGER PRIMARY KEY NOT NULL,
+                    GamerTag TEXT,
+                    FirstName TEXT
+                    LastName TEXT,
+                    GameID INTEGER,
+                    Contracted INTEGER,
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID)
+                );",
+                @"CREATE TABLE Rosters
+                    RosterID INTEGER PRIMARY KEY NOT NULL,
+                    Team TEXT,
+                    GameID INTEGER,
+                    ListOfPlayerIDs TEXT,
+                    FOREIGN KEY (Team) REFERENCES Teams(TeamID),
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID),
+                    FOREIGN KEY (ListOfPlayerIDs) REFERENCES Players(PlayerID)
+                );",
+                @"CREATE TABLE Events(
+                    EventID INTEGER PRIMARY KEY NOT NULL,
+                    Name TEXT,
+                    Date TEXT,
+                    GameID INTEGER,
+                    Location TEXT,
+                    PrizeMoney INTEGER,
+                    Format TEXT,
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID)
+                );"
+            );
             InitializeComponent();
+            InitializeTabs();
+        }
+
+        public void InitializeTabs()
+        {
+            foreach (Table Table in database.Tables)
+            {
+                FlowLayoutPanel flow = new FlowLayoutPanel();
+                Label label = new Label();
+                label.Text = "stuff";
+                flow.Controls.Add(label);
+                TabPage tab = new TabPage();
+                tab.Text = Table.Name;
+                tab.Controls.Add(flow);
+                Console.WriteLine(Table);
+                this.SelectTable.TabPages.Add(tab);
+            }
+        }
+
+        public class Database
+        {
+            public Database(string filename, params string[] creationSQL)
+            {
+                _filename = filename;
+                _path = @"URI=file:" + Application.StartupPath + @"\" + _filename;
+                _creationSQL = creationSQL;
+                Connection = new SQLiteConnection(_path);
+                Connection.Open();
+                Create();
+                ExtractTables();
+            }
+
+            public bool Create()
+            {
+                if (!System.IO.File.Exists(_filename))
+                {
+                    SQLiteConnection.CreateFile(_filename);
+                    foreach (string sql in _creationSQL)
+                    {
+                        Command = new SQLiteCommand(sql, Connection);
+                        Command.ExecuteNonQuery();
+                    }
+                    return true;
+                }
+                Console.WriteLine("Database already created.");
+                return false;
+            }
+
+            public void ExtractTables()
+            {
+                Command = new SQLiteCommand("SELECT name FROM sqlite_schema", Connection);
+                Reader = Command.ExecuteReader();
+                Tables = new List<Table>();
+                while (Reader.Read())
+                {
+                    for (int i = 0; i < Reader.FieldCount; i++)
+                    {
+                        Tables.Add(new Table((string) Reader.GetValue(i)));
+                    }
+                }
+            }
+
+            public SQLiteConnection Connection
+            { get; private set; }
+
+            public SQLiteCommand Command
+            { get; set; }
+
+            public SQLiteDataReader Reader
+            { get; set; }
+
+            public string ActiveTable
+            { get; set; }
+
+            public List<Table> Tables
+            { get; set; }
+
+            private static string[] _creationSQL;
+            private static string _filename;
+            private static string _path;
+        }
+
+        public class Table
+        {
+            public Table(string name)
+            {
+                this.Name = name;
+                //this.CreationSQL = creationSQL;
+            }
+
+            public string Name { get; set; }
+            public string CreationSQL { get; set; }
+
         }
 
         private void EsportsDatabase_Load(object sender, EventArgs e)
         {
-
-            CreateDB();
-            table = this.SelectTable.SelectedTab.Text;
-            DataShow(table);
-
+            ShowData(this.SelectTable.SelectedTab.Text);
         }
 
-        private void DataShow(string table)
+        private void ShowData(string table)
         {
             displayTable.Rows.Clear();
-            con = new SQLiteConnection(cs);
-            con.Open();
 
             string sql = "SELECT * FROM " + table;
-            cmd = new SQLiteCommand(sql, con);
-            dr = cmd.ExecuteReader();
+            database.Command = new SQLiteCommand(sql, database.Connection);
+            database.Reader = database.Command.ExecuteReader();
 
 
-            displayTable.ColumnCount = dr.FieldCount;
-            for (int i = 0; i < dr.FieldCount; i++)
+            displayTable.ColumnCount = database.Reader.FieldCount;
+            for (int i = 0; i < database.Reader.FieldCount; i++)
             {
-                displayTable.Columns[i].Name = dr.GetName(i);
+                displayTable.Columns[i].Name = database.Reader.GetName(i);
             }
 
             object[] values;
-            while (dr.Read())
+            while (database.Reader.Read())
             {
-                values = new object[dr.FieldCount];
-                for(int i = 0; i < dr.FieldCount; i++)
+                values = new object[database.Reader.FieldCount];
+                for(int i = 0; i < database.Reader.FieldCount; i++)
                 {
-                    values[i] = dr.GetValue(i);
+                    values[i] = database.Reader.GetValue(i);
                 }
                 displayTable.Rows.Add(values);            
             }
 
         }
 
-        private void CreateDB()
-        {
-            if (!System.IO.File.Exists(path))
-            {
-                SQLiteConnection.CreateFile(path);
-                using (var sqlite = new SQLiteConnection(@"Data Source=" + path))
-                {
-                    sqlite.Open();
-                    string sql = "CREATE TABLE Teams(" +
-                                 "TeamID INTEGER PRIMARY KEY NOT NULL," +
-                                 "Name TEXT," +
-                                 "GameID INTEGER," +
-                                 "Location TEXT," +
-                                 "FOREIGN KEY (GameID) REFERENCES Games(GameID)" +
-                                 ");";
-                    SQLiteCommand command = new SQLiteCommand(sql, sqlite);
-                    command.ExecuteNonQuery();
-
-                    sql = "CREATE TABLE Games(" +
-                                 "GameID INTEGER PRIMARY KEY NOT NULL," +
-                                 "Name TEXT," +
-                                 "Device TEXT, " +
-                                 "Type TEXT, " +
-                                 "NumberOfPlayers INTEGER " +
-                                 ");";
-                    SQLiteCommand command2 = new SQLiteCommand(sql, sqlite);
-                    command2.ExecuteNonQuery();
-                    sql = "CREATE TABLE Players(" +
-                                 "PlayerID INTEGER PRIMARY KEY NOT NULL, " +
-                                 "GamerTag TEXT, " +
-                                 "FirstName TEXT, " +
-                                 "LastName TEXT, " +
-                                 "GameID INTEGER, " +
-                                 "Contracted INTEGER, " +
-                                 "FOREIGN KEY (GameID) REFERENCES Games(GameID)" +
-                                 ");";
-                    command = new SQLiteCommand(sql, sqlite);
-                    command.ExecuteNonQuery();
-                    sql = "CREATE TABLE Rosters(" +
-                                 "RosterID INTEGER PRIMARY KEY NOT NULL, " +
-                                 "Team TEXT, " +
-                                 "GameID INTEGER, " +
-                                 "ListOfPlayerIDs TEXT, " +
-                                 "FOREIGN KEY (Team) REFERENCES Teams(TeamID), " +
-                                 "FOREIGN KEY (GameID) REFERENCES Games(GameID), " +
-                                 "FOREIGN KEY (ListOfPlayerIDs) REFERENCES Players(PlayerID)" +
-                                 ");";
-                    command = new SQLiteCommand(sql, sqlite);
-                    command.ExecuteNonQuery();
-                    sql = "CREATE TABLE Events(" +
-                                 "EventID INTEGER PRIMARY KEY NOT NULL, " +
-                                 "Name TEXT, " +
-                                 "Date TEXT, " +
-                                 "GameID INTEGER, " +
-                                 "Location TEXT, " +
-                                 "PrizeMoney INTEGER, " +
-                                 "Format TEXT, " +
-                                 "FOREIGN KEY (GameID) REFERENCES Games(GameID)" +
-                                 ");";
-                    command = new SQLiteCommand(sql, sqlite);
-                    command.ExecuteNonQuery();
-                }
-            }
-            else
-            {
-                Console.WriteLine("Database already created");
-                return;
-            }
-        }
-
         private void InsertBtn_Click(object sender, EventArgs e)
         {
             try
             {
-                var con = new SQLiteConnection(cs);
-                con.Open();
-                var cmd = new SQLiteCommand(con);
-                
-                if(table == "Teams")
+                if(database.ActiveTable == "Teams")
                 {
 
                 }
-                else if(table == "Games")
+                else if(database.ActiveTable == "Games")
                 {
-                    cmd.CommandText = "INSERT INTO Games(Name, Device, Type, NumberOfPlayers) VALUES(@name, @device, @type, @numPlayers)";
-
-                    cmd.Parameters.AddWithValue("@name", gameNameInput.Text);
-                    cmd.Parameters.AddWithValue("@device", gameDeviceInput.Text);
-                    cmd.Parameters.AddWithValue("@type", gameNameInput.Text);
-                    cmd.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));
+                    database.Command.CommandText = "INSERT INTO Games(Name, Device, Type, NumberOfPlayers) VALUES(@name, @device, @type, @numPlayers)";
+                    database.Command.Parameters.AddWithValue("@name", gameNameInput.Text);
+                    database.Command.Parameters.AddWithValue("@device", gameDeviceInput.Text);
+                    database.Command.Parameters.AddWithValue("@type", gameNameInput.Text);
+                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));
                 }
-                else if (table == "Players")
-                {
-
-                }
-                else if (table == "Rosters")
+                else if (database.ActiveTable == "Players")
                 {
 
                 }
-                else if (table == "Events")
+                else if (database.ActiveTable == "Rosters")
+                {
+
+                }
+                else if (database.ActiveTable == "Events")
                 {
 
                 }
 
-                cmd.ExecuteNonQuery();
+                database.Command.ExecuteNonQuery();
             }
             catch (Exception)
             {
                 Console.WriteLine("Data insert failed");
             }
 
-            DataShow(table);
+            ShowData(database.ActiveTable);
         }
 
         private void UpdateBtn_Click(object sender, EventArgs e)
         {
             try
             {
-                var con = new SQLiteConnection(cs);
-                con.Open();
-                var cmd = new SQLiteCommand(con);
-
-                if (table == "Teams")
+                if (database.ActiveTable == "Teams")
                 {
 
                 }
-                else if (table == "Games")
+                else if (database.ActiveTable == "Games")
                 {
-                    cmd.CommandText = "UPDATE Games SET Name = @name, Device = @device, Type = @type, NumberOfPlayers = @numPlayers WHERE GameID = @gameID";
-                    
-                    cmd.Parameters.AddWithValue("@gameID", gameIDInput.Text);
-                    cmd.Parameters.AddWithValue("@name", gameNameInput.Text);
-                    cmd.Parameters.AddWithValue("@device", gameDeviceInput.Text);
-                    cmd.Parameters.AddWithValue("@type", gameNameInput.Text);
-                    cmd.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));
+                    database.Command.CommandText = "UPDATE Games SET Name = @name, Device = @device, Type = @type, NumberOfPlayers = @numPlayers WHERE GameID = @gameID";
+                    database.Command.Parameters.AddWithValue("@gameID", gameIDInput.Text);
+                    database.Command.Parameters.AddWithValue("@name", gameNameInput.Text);
+                    database.Command.Parameters.AddWithValue("@device", gameDeviceInput.Text);
+                    database.Command.Parameters.AddWithValue("@type", gameNameInput.Text);
+                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));
                 }
-                else if (table == "Players")
-                {
-
-                }
-                else if (table == "Rosters")
+                else if (database.ActiveTable == "Players")
                 {
 
                 }
-                else if (table == "Events")
+                else if (database.ActiveTable == "Rosters")
+                {
+
+                }
+                else if (database.ActiveTable == "Events")
                 {
 
                 }
 
-                cmd.ExecuteNonQuery();
+                database.Command.ExecuteNonQuery();
             }
             catch (Exception)
             {
                 Console.WriteLine("Data update failed");
             }
 
-            DataShow(table);
+            ShowData(database.ActiveTable);
         }
 
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
             try
             {
-                var con = new SQLiteConnection(cs);
-                con.Open();
-                var cmd = new SQLiteCommand(con);
-
-                if (table == "Teams")
+                if (database.ActiveTable == "Teams")
                 {
 
                 }
-                else if (table == "Games")
+                else if (database.ActiveTable == "Games")
                 {
-                    cmd.CommandText = "DELETE FROM Games WHERE GameID = @gameID";
+                    database.Command.CommandText = "DELETE FROM Games WHERE GameID = @gameID";
 
-                    cmd.Parameters.AddWithValue("@gameID", gameIDInput.Text);
+                    database.Command.Parameters.AddWithValue("@gameID", gameIDInput.Text);
                 }
-                else if (table == "Players")
-                {
-
-                }
-                else if (table == "Rosters")
+                else if (database.ActiveTable == "Players")
                 {
 
                 }
-                else if (table == "Events")
+                else if (database.ActiveTable == "Rosters")
+                {
+
+                }
+                else if (database.ActiveTable == "Events")
                 {
 
                 }
 
-                cmd.ExecuteNonQuery();
+                database.Command.ExecuteNonQuery();
             }
             catch (Exception)
             {
                 Console.WriteLine("Data update failed");
             }
 
-            DataShow(table);
+            ShowData(database.ActiveTable);
         }
         private void SelectTable_Selected(object sender, EventArgs e)
         {
-            table = this.SelectTable.SelectedTab.Text;
-            DataShow(table);
+            database.ActiveTable = this.SelectTable.SelectedTab.Text;
+            ShowData(database.ActiveTable);
         }
+
+        public static Database database;
     }
 }

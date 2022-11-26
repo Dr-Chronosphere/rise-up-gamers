@@ -26,3 +26,17 @@ C:\Users\Logan Hutchens\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatab
 C:\Users\Logan Hutchens\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.CopyComplete
 C:\Users\Logan Hutchens\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.exe
 C:\Users\Logan Hutchens\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.pdb
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\bin\Debug\EsportsDatabase.exe.config
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\bin\Debug\EsportsDatabase.exe
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\bin\Debug\EsportsDatabase.pdb
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\bin\Debug\System.Data.SQLite.dll
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\bin\Debug\System.Data.SQLite.xml
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.AssemblyReference.cache
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.SuggestedBindingRedirects.cache
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.Properties.Resources.resources
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.GenerateResource.cache
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.CoreCompileInputs.cache
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.csproj.CopyComplete
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.exe
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.pdb
+C:\Users\treep\Source\Repos\Dr-Chronosphere\rise-up-gamers\EsportsDatabase\obj\Debug\EsportsDatabase.EsportsDatabase.resources
