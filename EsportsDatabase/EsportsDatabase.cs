@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SQLite;
+using static EsportsDatabase.EsportsDatabase;
 
 namespace EsportsDatabase
 {
@@ -38,17 +39,15 @@ namespace EsportsDatabase
                     FirstName TEXT
                     LastName TEXT,
                     GameID INTEGER,
-                    Contracted INTEGER,
                     FOREIGN KEY (GameID) REFERENCES Games(GameID)
                 );",
                 @"CREATE TABLE Rosters
                     RosterID INTEGER PRIMARY KEY NOT NULL,
-                    Team TEXT,
+                    TeamID TEXT,
                     GameID INTEGER,
                     ListOfPlayerIDs TEXT,
-                    FOREIGN KEY (Team) REFERENCES Teams(TeamID),
+                    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID),
                     FOREIGN KEY (GameID) REFERENCES Games(GameID),
-                    FOREIGN KEY (ListOfPlayerIDs) REFERENCES Players(PlayerID)
                 );",
                 @"CREATE TABLE Events(
                     EventID INTEGER PRIMARY KEY NOT NULL,
@@ -66,25 +65,40 @@ namespace EsportsDatabase
 
             // Put our modifications here:
             InitializeTabs();
+            ShowData(SelectTable.SelectedTab.Text);
         }
 
         // A testing function for programmatically generating the tab headers and content.
-        // TODO: gather all database fields and generate the tab page based on it. 
+        // TODO: expand FlowLayoutPanel so it doesn't cut off input fields
         public void InitializeTabs()
         {
             foreach (Table Table in database.Tables)
             {
                 // TODO: make Table class store their attributes for easy manipulation
+                
                 FlowLayoutPanel flow = new FlowLayoutPanel();
-                Label label = new Label();
-                label.Text = "stuff";
-                flow.Controls.Add(label);
+                string sql = "SELECT * FROM " + Table.Name;
+                database.Command = new SQLiteCommand(sql, database.Connection);
+                database.Reader = database.Command.ExecuteReader();
+                int numFields = database.Reader.FieldCount;
+                for (int i = 0; i < numFields; i++)
+                {
+                    Label label = new Label();
+                    label.Text = database.Reader.GetName(i);
+                    flow.Controls.Add(label);
+                    TextBox textbox = new TextBox();
+                    textbox.Name = Table.Name + database.Reader.GetName(i) + "Input";
+                    flow.Controls.Add(textbox);
+                }
+                
                 TabPage tab = new TabPage();
                 tab.Text = Table.Name;
                 tab.Controls.Add(flow);
                 Console.WriteLine(Table);
                 this.SelectTable.TabPages.Add(tab);
+
             }
+            this.SelectTable.SelectedIndex = 0;
         }
 
         // A wrapper class for Database CRUD functionality
@@ -167,12 +181,6 @@ namespace EsportsDatabase
 
         }
 
-        // Not sure what calls this particular function...
-        private void EsportsDatabase_Load(object sender, EventArgs e)
-        {
-            ShowData(this.SelectTable.SelectedTab.Text);
-        }
-
         // I didn't touch this other than referencing the singleton database object.
         private void ShowData(string table)
         {
@@ -214,10 +222,10 @@ namespace EsportsDatabase
                 else if(database.ActiveTable == "Games")
                 {
                     database.Command.CommandText = "INSERT INTO Games(Name, Device, Type, NumberOfPlayers) VALUES(@name, @device, @type, @numPlayers)";
-                    database.Command.Parameters.AddWithValue("@name", gameNameInput.Text);
-                    database.Command.Parameters.AddWithValue("@device", gameDeviceInput.Text);
-                    database.Command.Parameters.AddWithValue("@type", gameNameInput.Text);
-                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));
+                    /*database.Command.Parameters.AddWithValue("@name", GamesNameInput.Text);
+                    database.Command.Parameters.AddWithValue("@device", GamesDeviceInput.Text);
+                    database.Command.Parameters.AddWithValue("@type", GamesNameInput.Text);
+                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(GamesNumberOfPlayersInput.Text));*/
                 }
                 else if (database.ActiveTable == "Players")
                 {
@@ -253,11 +261,11 @@ namespace EsportsDatabase
                 else if (database.ActiveTable == "Games")
                 {
                     database.Command.CommandText = "UPDATE Games SET Name = @name, Device = @device, Type = @type, NumberOfPlayers = @numPlayers WHERE GameID = @gameID";
-                    database.Command.Parameters.AddWithValue("@gameID", gameIDInput.Text);
+                    /*database.Command.Parameters.AddWithValue("@gameID", gameIDInput.Text);
                     database.Command.Parameters.AddWithValue("@name", gameNameInput.Text);
                     database.Command.Parameters.AddWithValue("@device", gameDeviceInput.Text);
                     database.Command.Parameters.AddWithValue("@type", gameNameInput.Text);
-                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));
+                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));*/
                 }
                 else if (database.ActiveTable == "Players")
                 {
@@ -294,7 +302,7 @@ namespace EsportsDatabase
                 {
                     database.Command.CommandText = "DELETE FROM Games WHERE GameID = @gameID";
 
-                    database.Command.Parameters.AddWithValue("@gameID", gameIDInput.Text);
+                    /*database.Command.Parameters.AddWithValue("@gameID", gameIDInput.Text);*/
                 }
                 else if (database.ActiveTable == "Players")
                 {
@@ -325,5 +333,6 @@ namespace EsportsDatabase
         }
 
         public static Database database;
+
     }
 }
