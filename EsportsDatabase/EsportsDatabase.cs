@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SQLite;
 using static EsportsDatabase.EsportsDatabase;
+using System.Xml.Schema;
+using System.Reflection;
 
 namespace EsportsDatabase
 {
@@ -60,6 +62,7 @@ namespace EsportsDatabase
                     FOREIGN KEY (GameID) REFERENCES Games(GameID)
                 );"
             );
+            database.InitializeTables();
             // WinForms Designer Generator
             InitializeComponent();
 
@@ -68,35 +71,13 @@ namespace EsportsDatabase
             ShowData(SelectTable.SelectedTab.Text);
         }
 
-        // A testing function for programmatically generating the tab headers and content.
-        // TODO: expand FlowLayoutPanel so it doesn't cut off input fields
+        // Bootstraps the creation of tabs after the creation of tables.
         public void InitializeTabs()
         {
-            foreach (Table Table in database.Tables)
+            foreach (KeyValuePair<string, Table> table in database.Tables)
             {
-                // TODO: make Table class store their attributes for easy manipulation
-                
-                FlowLayoutPanel flow = new FlowLayoutPanel();
-                string sql = "SELECT * FROM " + Table.Name;
-                database.Command = new SQLiteCommand(sql, database.Connection);
-                database.Reader = database.Command.ExecuteReader();
-                int numFields = database.Reader.FieldCount;
-                for (int i = 0; i < numFields; i++)
-                {
-                    Label label = new Label();
-                    label.Text = database.Reader.GetName(i);
-                    flow.Controls.Add(label);
-                    TextBox textbox = new TextBox();
-                    textbox.Name = Table.Name + database.Reader.GetName(i) + "Input";
-                    flow.Controls.Add(textbox);
-                }
-                
-                TabPage tab = new TabPage();
-                tab.Text = Table.Name;
-                tab.Controls.Add(flow);
-                Console.WriteLine(Table);
-                this.SelectTable.TabPages.Add(tab);
-
+                TabPage tabpage = table.Value.LinkedTab.Generate();
+                this.SelectTable.TabPages.Add(tabpage);
             }
             this.SelectTable.SelectedIndex = 0;
         }
@@ -113,7 +94,6 @@ namespace EsportsDatabase
                 Connection = new SQLiteConnection(_path);
                 Connection.Open();
                 Create();
-                ExtractTables();
             }
 
             public bool Create()
@@ -132,18 +112,29 @@ namespace EsportsDatabase
                 return false;
             }
 
-            public void ExtractTables()
+            public void InitializeTables()
             {
-                Command = new SQLiteCommand("SELECT name FROM sqlite_schema", Connection);
+                Tables = new Dictionary<string, Table>();
+                Query("SELECT name FROM sqlite_schema WHERE type = 'table';");
+                foreach(string tableName in lastQueryResults)
+                {
+                    Tables[tableName] = new Table(tableName);
+                }
+            }
+
+            public List<string> Query(string sql)
+            {
+                lastQueryResults = new List<string>();
+                Command = new SQLiteCommand(sql, Connection);
                 Reader = Command.ExecuteReader();
-                Tables = new List<Table>();
                 while (Reader.Read())
                 {
                     for (int i = 0; i < Reader.FieldCount; i++)
                     {
-                        Tables.Add(new Table((string) Reader.GetValue(i)));
+                        lastQueryResults.Add(Reader.GetValue(i).ToString());
                     }
                 }
+                return lastQueryResults;
             }
 
             public SQLiteConnection Connection
@@ -155,11 +146,12 @@ namespace EsportsDatabase
             public SQLiteDataReader Reader
             { get; set; }
 
+            public List<string> lastQueryResults;
+
             public string ActiveTable
             { get; set; }
 
-            public List<Table> Tables
-            { get; set; }
+            public Dictionary<string, Table> Tables;
 
             private static string[] _creationSQL;
             private static string _filename;
@@ -173,39 +165,87 @@ namespace EsportsDatabase
             public Table(string name)
             {
                 this.Name = name;
-                //this.CreationSQL = creationSQL;
+                Fields = database.Query($"SELECT name FROM pragma_table_info('{name}')");
+                LinkedTab = new Tab(name);
+            }
+
+            public void Insert()
+            {
+                /*database.Command.CommandText = "INSERT INTO Games(Name, Device, Type, NumberOfPlayers) VALUES(@name, @device, @type, @numPlayers)";
+                database.Command.Parameters.AddWithValue("@name", GamesNameInput.Text);
+                database.Command.Parameters.AddWithValue("@device", GamesDeviceInput.Text);
+                database.Command.Parameters.AddWithValue("@type", GamesNameInput.Text);
+                database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(GamesNumberOfPlayersInput.Text));
+                database.Command.CommandText = $"INSERT INTO {ActiveTable}";*/
+                
+                database.Command.CommandText = $"INSERT INTO {Name}({string.Join(",", Fields)}) VALUES(@{string.Join(",@", Fields)})";
+                foreach (KeyValuePair<string, TextBox> input in LinkedTab.Inputs)
+                {
+                    Console.WriteLine("yay");
+                    database.Command.Parameters.AddWithValue($"@{input.Key}", input.Value.Text);
+                }
+                database.Command.ExecuteNonQuery();
             }
 
             public string Name { get; set; }
-            public string CreationSQL { get; set; }
-
+            public List<string> Fields { get; set; }
+            public Tab LinkedTab { get; set; }
         }
 
-        // I didn't touch this other than referencing the singleton database object.
+        public class Tab
+        {
+            public Tab(string table)
+            {
+                this.LinkedTable = table;
+                Inputs = new Dictionary<string, TextBox>();
+            }
+
+            public TabPage Generate()
+            {
+                FlowLayoutPanel flow = new FlowLayoutPanel();
+                flow.AutoScroll = true;
+                flow.Dock = DockStyle.Fill;
+
+                foreach (string field in database.Tables[LinkedTable].Fields)
+                {
+                    Label label = new Label();
+                    label.Text = field;
+                    flow.Controls.Add(label);
+                    
+                    TextBox textbox = new TextBox();
+                    textbox.Name = LinkedTable + field + "Input";
+                    flow.Controls.Add(textbox);
+                    Inputs[field] = textbox;
+                }
+
+                TabPage tab = new TabPage();
+                tab.Text = LinkedTable;
+                tab.Controls.Add(flow);
+
+                return tab;
+            }
+
+            public string LinkedTable;
+            public Dictionary<string, TextBox> Inputs
+            { get; set; }
+        }
+
+        // Rewritten with query function and Table Object
         private void ShowData(string table)
         {
             displayTable.Rows.Clear();
 
-            string sql = "SELECT * FROM " + table;
-            database.Command = new SQLiteCommand(sql, database.Connection);
-            database.Reader = database.Command.ExecuteReader();
-
-
-            displayTable.ColumnCount = database.Reader.FieldCount;
-            for (int i = 0; i < database.Reader.FieldCount; i++)
+            var columnHeaders = database.Tables[table].Fields;
+            displayTable.ColumnCount = columnHeaders.Count;
+            for (int i = 0; i < columnHeaders.Count; i++)
             {
-                displayTable.Columns[i].Name = database.Reader.GetName(i);
+                displayTable.Columns[i].Name = columnHeaders[i];
             }
 
-            object[] values;
-            while (database.Reader.Read())
+            var data = database.Query($"SELECT * FROM {table}");
+            for (int i = 0; i < data.Count - 1; i += (columnHeaders.Count))
             {
-                values = new object[database.Reader.FieldCount];
-                for(int i = 0; i < database.Reader.FieldCount; i++)
-                {
-                    values[i] = database.Reader.GetValue(i);
-                }
-                displayTable.Rows.Add(values);            
+                displayTable.Rows.Add(data.GetRange(i, columnHeaders.Count).ToArray());
             }
         }
 
@@ -215,17 +255,17 @@ namespace EsportsDatabase
             // TODO: These will not be if statements, but a function call to a generalized insert function
             try
             {
-                if(database.ActiveTable == "Teams")
+                /*if(database.ActiveTable == "Teams")
                 {
 
                 }
                 else if(database.ActiveTable == "Games")
                 {
                     database.Command.CommandText = "INSERT INTO Games(Name, Device, Type, NumberOfPlayers) VALUES(@name, @device, @type, @numPlayers)";
-                    /*database.Command.Parameters.AddWithValue("@name", GamesNameInput.Text);
+                    database.Command.Parameters.AddWithValue("@name", GamesNameInput.Text);
                     database.Command.Parameters.AddWithValue("@device", GamesDeviceInput.Text);
                     database.Command.Parameters.AddWithValue("@type", GamesNameInput.Text);
-                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(GamesNumberOfPlayersInput.Text));*/
+                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(GamesNumberOfPlayersInput.Text));
                 }
                 else if (database.ActiveTable == "Players")
                 {
@@ -239,8 +279,9 @@ namespace EsportsDatabase
                 {
 
                 }
-
-                database.Command.ExecuteNonQuery();
+                
+                database.Command.ExecuteNonQuery();*/
+                database.Tables[database.ActiveTable].Insert();
             }
             catch (Exception)
             {
@@ -326,6 +367,7 @@ namespace EsportsDatabase
 
             ShowData(database.ActiveTable);
         }
+
         private void SelectTable_Selected(object sender, EventArgs e)
         {
             database.ActiveTable = this.SelectTable.SelectedTab.Text;
