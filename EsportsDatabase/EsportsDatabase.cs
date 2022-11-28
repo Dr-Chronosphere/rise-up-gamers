@@ -134,6 +134,7 @@ namespace EsportsDatabase
                         lastQueryResults.Add(Reader.GetValue(i).ToString());
                     }
                 }
+                Reader.Close();
                 return lastQueryResults;
             }
 
@@ -171,20 +172,17 @@ namespace EsportsDatabase
 
             public void Insert()
             {
-                /*database.Command.CommandText = "INSERT INTO Games(Name, Device, Type, NumberOfPlayers) VALUES(@name, @device, @type, @numPlayers)";
-                database.Command.Parameters.AddWithValue("@name", GamesNameInput.Text);
-                database.Command.Parameters.AddWithValue("@device", GamesDeviceInput.Text);
-                database.Command.Parameters.AddWithValue("@type", GamesNameInput.Text);
-                database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(GamesNumberOfPlayersInput.Text));
-                database.Command.CommandText = $"INSERT INTO {ActiveTable}";*/
-                
+
+                string id = this.Fields[0];
+                this.Fields.RemoveAt(0);
+
                 database.Command.CommandText = $"INSERT INTO {Name}({string.Join(",", Fields)}) VALUES(@{string.Join(",@", Fields)})";
                 foreach (KeyValuePair<string, TextBox> input in LinkedTab.Inputs)
                 {
-                    Console.WriteLine("yay");
                     database.Command.Parameters.AddWithValue($"@{input.Key}", input.Value.Text);
                 }
                 database.Command.ExecuteNonQuery();
+                this.Fields.Insert(0, id);
             }
 
             public string Name { get; set; }
@@ -253,8 +251,6 @@ namespace EsportsDatabase
         private void InsertBtn_Click(object sender, EventArgs e)
         {
             // TODO: These will not be if statements, but a function call to a generalized insert function
-            try
-            {
                 /*if(database.ActiveTable == "Teams")
                 {
 
@@ -279,16 +275,11 @@ namespace EsportsDatabase
                 {
 
                 }
-                
+                oy67
                 database.Command.ExecuteNonQuery();*/
-                database.Tables[database.ActiveTable].Insert();
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Data insert failed");
-            }
+                database.Tables[SelectTable.SelectedTab.Text].Insert();
 
-            ShowData(database.ActiveTable);
+            ShowData(SelectTable.SelectedTab.Text);
         }
 
         private void UpdateBtn_Click(object sender, EventArgs e)
