@@ -43,13 +43,13 @@ namespace EsportsDatabase
                     GameID INTEGER,
                     FOREIGN KEY (GameID) REFERENCES Games(GameID)
                 );",
-                @"CREATE TABLE Rosters
+                @"CREATE TABLE Rosters(
                     RosterID INTEGER PRIMARY KEY NOT NULL,
                     TeamID TEXT,
                     GameID INTEGER,
                     ListOfPlayerIDs TEXT,
                     FOREIGN KEY (TeamID) REFERENCES Teams(TeamID),
-                    FOREIGN KEY (GameID) REFERENCES Games(GameID),
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID)
                 );",
                 @"CREATE TABLE Events(
                     EventID INTEGER PRIMARY KEY NOT NULL,
@@ -68,7 +68,8 @@ namespace EsportsDatabase
 
             // Put our modifications here:
             InitializeTabs();
-            ShowData(SelectTable.SelectedTab.Text);
+            database.ActiveTable = this.SelectTable.SelectedTab.Text;
+            ShowData(database.ActiveTable);
         }
 
         // Bootstraps the creation of tabs after the creation of tables.
@@ -92,15 +93,18 @@ namespace EsportsDatabase
                 _path = "URI=file:" + Application.StartupPath + "\\" + _filename;
                 _creationSQL = creationSQL;
                 Connection = new SQLiteConnection(_path);
-                Connection.Open();
+                
                 Create();
+                
             }
 
             public bool Create()
             {
                 if (!System.IO.File.Exists(_filename))
                 {
+
                     SQLiteConnection.CreateFile(_filename);
+                    Connection.Open();
                     foreach (string sql in _creationSQL)
                     {
                         Command = new SQLiteCommand(sql, Connection);
@@ -277,9 +281,9 @@ namespace EsportsDatabase
                 }
                 oy67
                 database.Command.ExecuteNonQuery();*/
-                database.Tables[SelectTable.SelectedTab.Text].Insert();
+                database.Tables[database.ActiveTable].Insert();
 
-            ShowData(SelectTable.SelectedTab.Text);
+            ShowData(database.ActiveTable);
         }
 
         private void UpdateBtn_Click(object sender, EventArgs e)
