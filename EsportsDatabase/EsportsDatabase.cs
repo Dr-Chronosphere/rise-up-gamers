@@ -26,7 +26,7 @@ namespace EsportsDatabase
                     Name TEXT, 
                     GameID INTEGER,
                     Location TEXT,
-                    FOREIGN KEY (GameID) REFERENCES Games(GameID)
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
                 );",
                 @"CREATE TABLE Games(
                     GameID INTEGER PRIMARY KEY NOT NULL,
@@ -38,18 +38,18 @@ namespace EsportsDatabase
                 @"CREATE TABLE Players(
                     PlayerID INTEGER PRIMARY KEY NOT NULL,
                     GamerTag TEXT,
-                    FirstName TEXT
+                    FirstName TEXT,
                     LastName TEXT,
                     GameID INTEGER,
-                    FOREIGN KEY (GameID) REFERENCES Games(GameID)
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
                 );",
                 @"CREATE TABLE Rosters(
                     RosterID INTEGER PRIMARY KEY NOT NULL,
                     TeamID TEXT,
                     GameID INTEGER,
-                    ListOfPlayerIDs TEXT,
-                    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID),
-                    FOREIGN KEY (GameID) REFERENCES Games(GameID)
+                    ListOfPlayers TEXT,
+                    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE,
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
                 );",
                 @"CREATE TABLE Events(
                     EventID INTEGER PRIMARY KEY NOT NULL,
@@ -59,7 +59,7 @@ namespace EsportsDatabase
                     Location TEXT,
                     PrizeMoney INTEGER,
                     Format TEXT,
-                    FOREIGN KEY (GameID) REFERENCES Games(GameID)
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
                 );"
             );
             database.InitializeTables();
@@ -110,9 +110,14 @@ namespace EsportsDatabase
                         Command = new SQLiteCommand(sql, Connection);
                         Command.ExecuteNonQuery();
                     }
+                    Command = new SQLiteCommand("PRAGMA foreign_keys=ON", Connection);
+                    Command.ExecuteNonQuery();
                     return true;
                 }
                 Console.WriteLine("Database already created.");
+                Connection.Open();
+                Command = new SQLiteCommand("PRAGMA foreign_keys=ON", Connection);
+                Command.ExecuteNonQuery();
                 return false;
             }
 
@@ -177,8 +182,7 @@ namespace EsportsDatabase
             public void Insert()
             {
 
-                string id = this.Fields[0];
-                this.Fields.RemoveAt(0);
+                
 
                 database.Command.CommandText = $"INSERT INTO {Name}({string.Join(",", Fields)}) VALUES(@{string.Join(",@", Fields)})";
                 foreach (KeyValuePair<string, TextBox> input in LinkedTab.Inputs)
@@ -186,7 +190,17 @@ namespace EsportsDatabase
                     database.Command.Parameters.AddWithValue($"@{input.Key}", input.Value.Text);
                 }
                 database.Command.ExecuteNonQuery();
-                this.Fields.Insert(0, id);
+                
+            }
+
+            public void Update()
+            {
+
+            }
+
+            public void Delete()
+            {
+
             }
 
             public string Name { get; set; }
@@ -254,35 +268,17 @@ namespace EsportsDatabase
         // All the following buttons will be greatly condensed by a generalized function call.
         private void InsertBtn_Click(object sender, EventArgs e)
         {
-            // TODO: These will not be if statements, but a function call to a generalized insert function
-                /*if(database.ActiveTable == "Teams")
-                {
-
-                }
-                else if(database.ActiveTable == "Games")
-                {
-                    database.Command.CommandText = "INSERT INTO Games(Name, Device, Type, NumberOfPlayers) VALUES(@name, @device, @type, @numPlayers)";
-                    database.Command.Parameters.AddWithValue("@name", GamesNameInput.Text);
-                    database.Command.Parameters.AddWithValue("@device", GamesDeviceInput.Text);
-                    database.Command.Parameters.AddWithValue("@type", GamesNameInput.Text);
-                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(GamesNumberOfPlayersInput.Text));
-                }
-                else if (database.ActiveTable == "Players")
-                {
-
-                }
-                else if (database.ActiveTable == "Rosters")
-                {
-
-                }
-                else if (database.ActiveTable == "Events")
-                {
-
-                }
-                oy67
-                database.Command.ExecuteNonQuery();*/
+            string id = database.Tables[database.ActiveTable].Fields[0];
+            database.Tables[database.ActiveTable].Fields.RemoveAt(0);
+            try
+            { 
                 database.Tables[database.ActiveTable].Insert();
-
+            }
+            catch(Exception)
+            {
+                ErrorLabel.Text = "Data insert failed";
+            }
+            database.Tables[database.ActiveTable].Fields.Insert(0, id);
             ShowData(database.ActiveTable);
         }
 
@@ -290,37 +286,11 @@ namespace EsportsDatabase
         {
             try
             {
-                if (database.ActiveTable == "Teams")
-                {
-
-                }
-                else if (database.ActiveTable == "Games")
-                {
-                    database.Command.CommandText = "UPDATE Games SET Name = @name, Device = @device, Type = @type, NumberOfPlayers = @numPlayers WHERE GameID = @gameID";
-                    /*database.Command.Parameters.AddWithValue("@gameID", gameIDInput.Text);
-                    database.Command.Parameters.AddWithValue("@name", gameNameInput.Text);
-                    database.Command.Parameters.AddWithValue("@device", gameDeviceInput.Text);
-                    database.Command.Parameters.AddWithValue("@type", gameNameInput.Text);
-                    database.Command.Parameters.AddWithValue("@numPlayers", Int32.Parse(gameNumberOfPlayersPerTeamInput.Text));*/
-                }
-                else if (database.ActiveTable == "Players")
-                {
-
-                }
-                else if (database.ActiveTable == "Rosters")
-                {
-
-                }
-                else if (database.ActiveTable == "Events")
-                {
-
-                }
-
-                database.Command.ExecuteNonQuery();
+                database.Tables[database.ActiveTable].Update();
             }
             catch (Exception)
             {
-                Console.WriteLine("Data update failed");
+                ErrorLabel.Text = "Data update failed";
             }
 
             ShowData(database.ActiveTable);
@@ -330,37 +300,64 @@ namespace EsportsDatabase
         {
             try
             {
-                if (database.ActiveTable == "Teams")
-                {
-
-                }
-                else if (database.ActiveTable == "Games")
-                {
-                    database.Command.CommandText = "DELETE FROM Games WHERE GameID = @gameID";
-
-                    /*database.Command.Parameters.AddWithValue("@gameID", gameIDInput.Text);*/
-                }
-                else if (database.ActiveTable == "Players")
-                {
-
-                }
-                else if (database.ActiveTable == "Rosters")
-                {
-
-                }
-                else if (database.ActiveTable == "Events")
-                {
-
-                }
-
-                database.Command.ExecuteNonQuery();
+                database.Tables[database.ActiveTable].Delete();
             }
             catch (Exception)
             {
-                Console.WriteLine("Data update failed");
+                ErrorLabel.Text = "Data delete failed";
             }
 
             ShowData(database.ActiveTable);
+        }
+
+        private void JoinBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                List<string> tablesToJoin = new List<string>();
+                for (int i = 0; i < JoinTables.Items.Count; i++)
+                {
+                    if (JoinTables.GetItemChecked(i))
+                    {
+                        tablesToJoin.Add(JoinTables.GetItemText(i));
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                ErrorLabel.Text = "Table join failed";
+            }
+
+        }
+
+        private void SearchBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string rowFilter = "";
+                foreach (KeyValuePair<string, TextBox> input in database.Tables[database.ActiveTable].LinkedTab.Inputs)
+                {
+                    if (input.Value.Text != "")
+                    {
+                        rowFilter += input.Key + " = '" + input.Value.Text + "', ";
+                    }
+                }
+                rowFilter = rowFilter.Remove(rowFilter.Length - 2, 2);
+
+                var data = database.Query($"SELECT * FROM " + database.ActiveTable + " WHERE " + rowFilter);
+                var columnHeaders = database.Tables[database.ActiveTable].Fields;
+
+                displayTable.Rows.Clear();
+
+                for (int i = 0; i < data.Count - 1; i += (columnHeaders.Count))
+                {
+                    displayTable.Rows.Add(data.GetRange(i, columnHeaders.Count).ToArray());
+                }
+            }
+            catch (Exception)
+            {
+                ErrorLabel.Text = "Data search failed";
+            }
         }
 
         private void SelectTable_Selected(object sender, EventArgs e)
@@ -368,6 +365,8 @@ namespace EsportsDatabase
             database.ActiveTable = this.SelectTable.SelectedTab.Text;
             ShowData(database.ActiveTable);
         }
+
+        
 
         public static Database database;
 

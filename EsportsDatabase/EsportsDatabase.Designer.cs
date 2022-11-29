@@ -33,6 +33,10 @@
             this.UpdateBtn = new System.Windows.Forms.Button();
             this.DeleteBtn = new System.Windows.Forms.Button();
             this.SelectTable = new System.Windows.Forms.TabControl();
+            this.JoinBtn = new System.Windows.Forms.Button();
+            this.JoinTables = new System.Windows.Forms.CheckedListBox();
+            this.SearchBtn = new System.Windows.Forms.Button();
+            this.ErrorLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.displayTable)).BeginInit();
             this.SuspendLayout();
             // 
@@ -44,12 +48,12 @@
             this.displayTable.Name = "displayTable";
             this.displayTable.RowHeadersWidth = 51;
             this.displayTable.RowTemplate.Height = 24;
-            this.displayTable.Size = new System.Drawing.Size(386, 404);
+            this.displayTable.Size = new System.Drawing.Size(386, 427);
             this.displayTable.TabIndex = 0;
             // 
             // InsertBtn
             // 
-            this.InsertBtn.Location = new System.Drawing.Point(29, 382);
+            this.InsertBtn.Location = new System.Drawing.Point(29, 405);
             this.InsertBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.InsertBtn.Name = "InsertBtn";
             this.InsertBtn.Size = new System.Drawing.Size(115, 34);
@@ -60,7 +64,7 @@
             // 
             // UpdateBtn
             // 
-            this.UpdateBtn.Location = new System.Drawing.Point(149, 382);
+            this.UpdateBtn.Location = new System.Drawing.Point(148, 405);
             this.UpdateBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.UpdateBtn.Name = "UpdateBtn";
             this.UpdateBtn.Size = new System.Drawing.Size(115, 34);
@@ -71,7 +75,7 @@
             // 
             // DeleteBtn
             // 
-            this.DeleteBtn.Location = new System.Drawing.Point(269, 382);
+            this.DeleteBtn.Location = new System.Drawing.Point(269, 405);
             this.DeleteBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.DeleteBtn.Name = "DeleteBtn";
             this.DeleteBtn.Size = new System.Drawing.Size(115, 34);
@@ -86,15 +90,61 @@
             this.SelectTable.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SelectTable.Name = "SelectTable";
             this.SelectTable.SelectedIndex = 0;
-            this.SelectTable.Size = new System.Drawing.Size(355, 304);
+            this.SelectTable.Size = new System.Drawing.Size(355, 225);
             this.SelectTable.TabIndex = 16;
             this.SelectTable.Selected += new System.Windows.Forms.TabControlEventHandler(this.SelectTable_Selected);
+            // 
+            // JoinBtn
+            // 
+            this.JoinBtn.Location = new System.Drawing.Point(269, 317);
+            this.JoinBtn.Name = "JoinBtn";
+            this.JoinBtn.Size = new System.Drawing.Size(115, 34);
+            this.JoinBtn.TabIndex = 17;
+            this.JoinBtn.Text = "Join";
+            this.JoinBtn.UseVisualStyleBackColor = true;
+            this.JoinBtn.Click += new System.EventHandler(this.JoinBtn_Click);
+            // 
+            // JoinTables
+            // 
+            this.JoinTables.FormattingEnabled = true;
+            this.JoinTables.Items.AddRange(new object[] {
+            "Teams",
+            "Games",
+            "Players",
+            "Rosters",
+            "Events"});
+            this.JoinTables.Location = new System.Drawing.Point(157, 285);
+            this.JoinTables.Name = "JoinTables";
+            this.JoinTables.Size = new System.Drawing.Size(106, 106);
+            this.JoinTables.TabIndex = 18;
+            // 
+            // SearchBtn
+            // 
+            this.SearchBtn.Location = new System.Drawing.Point(29, 317);
+            this.SearchBtn.Name = "SearchBtn";
+            this.SearchBtn.Size = new System.Drawing.Size(115, 34);
+            this.SearchBtn.TabIndex = 19;
+            this.SearchBtn.Text = "Search";
+            this.SearchBtn.UseVisualStyleBackColor = true;
+            this.SearchBtn.Click += new System.EventHandler(this.SearchBtn_Click);
+            // 
+            // ErrorLabel
+            // 
+            this.ErrorLabel.AutoSize = true;
+            this.ErrorLabel.Location = new System.Drawing.Point(145, 252);
+            this.ErrorLabel.Name = "ErrorLabel";
+            this.ErrorLabel.Size = new System.Drawing.Size(0, 16);
+            this.ErrorLabel.TabIndex = 20;
             // 
             // EsportsDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.ErrorLabel);
+            this.Controls.Add(this.SearchBtn);
+            this.Controls.Add(this.JoinTables);
+            this.Controls.Add(this.JoinBtn);
             this.Controls.Add(this.SelectTable);
             this.Controls.Add(this.DeleteBtn);
             this.Controls.Add(this.UpdateBtn);
@@ -105,6 +155,7 @@
             this.Text = "Esports Database";
             ((System.ComponentModel.ISupportInitialize)(this.displayTable)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -115,6 +166,10 @@
         private System.Windows.Forms.Button UpdateBtn;
         private System.Windows.Forms.Button DeleteBtn;
         private System.Windows.Forms.TabControl SelectTable;
+        private System.Windows.Forms.Button JoinBtn;
+        private System.Windows.Forms.CheckedListBox JoinTables;
+        private System.Windows.Forms.Button SearchBtn;
+        private System.Windows.Forms.Label ErrorLabel;
     }
 }
 
