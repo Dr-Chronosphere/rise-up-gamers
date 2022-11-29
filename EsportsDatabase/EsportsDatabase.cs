@@ -301,7 +301,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = "Data update failed. Error code: {error}";
+                ErrorLabel.Text = $"Data update failed. Error code: {error}";
             }
 
             ShowData(database.ActiveTable);
