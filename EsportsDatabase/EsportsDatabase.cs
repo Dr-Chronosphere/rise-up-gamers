@@ -175,27 +175,34 @@ namespace EsportsDatabase
             public Table(string name)
             {
                 this.Name = name;
-                Fields = database.Query($"SELECT name FROM pragma_table_info('{name}')");
+                Fields = database.Query($"SELECT name FROM pragma_table_info('{name}') WHERE pk = 0");
+                PrimaryKey = database.Query($"SELECT name FROM pragma_table_info('{name}') WHERE pk = 1")[0];
+                AllFields = new List<string>();
+                AllFields.Add(PrimaryKey);
+                AllFields.AddRange(Fields);
                 LinkedTab = new Tab(name);
             }
 
             public void Insert()
             {
-
-                
-
                 database.Command.CommandText = $"INSERT INTO {Name}({string.Join(",", Fields)}) VALUES(@{string.Join(",@", Fields)})";
                 foreach (KeyValuePair<string, TextBox> input in LinkedTab.Inputs)
                 {
                     database.Command.Parameters.AddWithValue($"@{input.Key}", input.Value.Text);
                 }
                 database.Command.ExecuteNonQuery();
-                
             }
 
             public void Update()
             {
-
+                var activeFields = from field in Fields where !string.IsNullOrEmpty(LinkedTab.Inputs[field].Text) select field;
+                var setters = activeFields.Select(field => field + " = @" + field.ToLower());
+                database.Command.CommandText = $"UPDATE {Name} SET {string.Join(", ", setters)} WHERE {PrimaryKey} = {LinkedTab.Inputs[PrimaryKey].Text}";
+                foreach (string field in activeFields)
+                {
+                    database.Command.Parameters.AddWithValue($"@{field.ToLower()}", LinkedTab.Inputs[field].Text);
+                }
+                database.Command.ExecuteNonQuery();
             }
 
             public void Delete()
@@ -206,6 +213,12 @@ namespace EsportsDatabase
             public string Name { get; set; }
             public List<string> Fields { get; set; }
             public Tab LinkedTab { get; set; }
+
+            // new fields for storing primary key separately, all fields?, and external table references
+            public string PrimaryKey { get; set; }
+            public List<string> AllFields { get; set; }
+            // may be unnecessary... use Exception raised by specifying non-existant key.
+            public List<(string sourceField, string targetTable, string targetField)> References { get; set; }
         }
 
         public class Tab
@@ -222,7 +235,7 @@ namespace EsportsDatabase
                 flow.AutoScroll = true;
                 flow.Dock = DockStyle.Fill;
 
-                foreach (string field in database.Tables[LinkedTable].Fields)
+                foreach (string field in database.Tables[LinkedTable].AllFields)
                 {
                     Label label = new Label();
                     label.Text = field;
@@ -251,7 +264,7 @@ namespace EsportsDatabase
         {
             displayTable.Rows.Clear();
 
-            var columnHeaders = database.Tables[table].Fields;
+            var columnHeaders = database.Tables[table].AllFields;
             displayTable.ColumnCount = columnHeaders.Count;
             for (int i = 0; i < columnHeaders.Count; i++)
             {
@@ -267,9 +280,7 @@ namespace EsportsDatabase
 
         // All the following buttons will be greatly condensed by a generalized function call.
         private void InsertBtn_Click(object sender, EventArgs e)
-        {
-            string id = database.Tables[database.ActiveTable].Fields[0];
-            database.Tables[database.ActiveTable].Fields.RemoveAt(0);
+        { 
             try
             { 
                 database.Tables[database.ActiveTable].Insert();
@@ -278,7 +289,7 @@ namespace EsportsDatabase
             {
                 ErrorLabel.Text = "Data insert failed";
             }
-            database.Tables[database.ActiveTable].Fields.Insert(0, id);
+            
             ShowData(database.ActiveTable);
         }
 
