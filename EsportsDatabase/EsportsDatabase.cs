@@ -93,16 +93,13 @@ namespace EsportsDatabase
                 _path = "URI=file:" + Application.StartupPath + "\\" + _filename;
                 _creationSQL = creationSQL;
                 Connection = new SQLiteConnection(_path);
-                
                 Create();
-                
             }
 
             public bool Create()
             {
                 if (!System.IO.File.Exists(_filename))
-                {
-
+                { 
                     SQLiteConnection.CreateFile(_filename);
                     Connection.Open();
                     foreach (string sql in _creationSQL)
@@ -185,7 +182,7 @@ namespace EsportsDatabase
 
             public void Insert()
             {
-                database.Command.CommandText = $"INSERT INTO {Name}({string.Join(",", Fields)}) VALUES(@{string.Join(",@", Fields)})";
+                database.Command.CommandText = $"INSERT INTO {Name}({string.Join(", ", Fields)}) VALUES(@{string.Join(", @", Fields)})";
                 foreach (KeyValuePair<string, TextBox> input in LinkedTab.Inputs)
                 {
                     database.Command.Parameters.AddWithValue($"@{input.Key}", input.Value.Text);
@@ -207,7 +204,8 @@ namespace EsportsDatabase
 
             public void Delete()
             {
-
+                database.Command.CommandText = $"DELETE FROM {Name} WHERE {PrimaryKey} = '{LinkedTab.Inputs[PrimaryKey].Text}'";
+                database.Command.ExecuteNonQuery();
             }
 
             public string Name { get; set; }
@@ -353,7 +351,6 @@ namespace EsportsDatabase
                     }
                 }
                 string rowFilter = string.Join(" OR ", Filters);
-                
 
                 var data = database.Query($"SELECT * FROM {database.ActiveTable} WHERE {rowFilter}");
                 var columnHeaders = database.Tables[database.ActiveTable].AllFields;
