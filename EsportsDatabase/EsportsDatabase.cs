@@ -344,29 +344,30 @@ namespace EsportsDatabase
         {
             try
             {
-                string rowFilter = "";
+                var Filters = new List<string>();
                 foreach (KeyValuePair<string, TextBox> input in database.Tables[database.ActiveTable].LinkedTab.Inputs)
                 {
                     if (!string.IsNullOrEmpty(input.Value.Text))
                     {
-                        rowFilter += input.Key + " LIKE '%" + input.Value.Text + "%', ";
+                        Filters.Add($"{input.Key} LIKE '%{input.Value.Text}%'");
                     }
                 }
-                rowFilter = rowFilter.Remove(rowFilter.Length - 2, 2);
+                string rowFilter = string.Join(" OR ", Filters);
+                
 
                 var data = database.Query($"SELECT * FROM {database.ActiveTable} WHERE {rowFilter}");
-                var columnHeaders = database.Tables[database.ActiveTable].Fields;
+                var columnHeaders = database.Tables[database.ActiveTable].AllFields;
 
                 displayTable.Rows.Clear();
 
-                for (int i = 0; i < data.Count - 1; i += (columnHeaders.Count))
+                for (int i = 0; i < data.Count; i += (columnHeaders.Count))
                 {
                     displayTable.Rows.Add(data.GetRange(i, columnHeaders.Count).ToArray());
                 }
             }
-            catch (Exception)
+            catch (Exception error)
             {
-                ErrorLabel.Text = "Data search failed";
+                ErrorLabel.Text = $"Data search failed. Error code: {error}";
             }
         }
 
