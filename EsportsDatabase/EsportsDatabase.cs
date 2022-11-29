@@ -278,7 +278,6 @@ namespace EsportsDatabase
             }
         }
 
-        // All the following buttons will be greatly condensed by a generalized function call.
         private void InsertBtn_Click(object sender, EventArgs e)
         { 
             try
@@ -334,9 +333,9 @@ namespace EsportsDatabase
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception error)
             {
-                ErrorLabel.Text = "Table join failed";
+                ErrorLabel.Text = $"Table join failed. Error code: {error}";
             }
 
         }
@@ -348,14 +347,14 @@ namespace EsportsDatabase
                 string rowFilter = "";
                 foreach (KeyValuePair<string, TextBox> input in database.Tables[database.ActiveTable].LinkedTab.Inputs)
                 {
-                    if (input.Value.Text != "")
+                    if (!string.IsNullOrEmpty(input.Value.Text))
                     {
-                        rowFilter += input.Key + " = '" + input.Value.Text + "', ";
+                        rowFilter += input.Key + " LIKE '%" + input.Value.Text + "%', ";
                     }
                 }
                 rowFilter = rowFilter.Remove(rowFilter.Length - 2, 2);
 
-                var data = database.Query($"SELECT * FROM " + database.ActiveTable + " WHERE " + rowFilter);
+                var data = database.Query($"SELECT * FROM {database.ActiveTable} WHERE {rowFilter}");
                 var columnHeaders = database.Tables[database.ActiveTable].Fields;
 
                 displayTable.Rows.Clear();
