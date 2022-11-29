@@ -285,9 +285,9 @@ namespace EsportsDatabase
             { 
                 database.Tables[database.ActiveTable].Insert();
             }
-            catch(Exception)
+            catch(Exception error)
             {
-                ErrorLabel.Text = "Data insert failed";
+                ErrorLabel.Text = $"Data insert failed. Error code: {error}";
             }
             
             ShowData(database.ActiveTable);
@@ -299,9 +299,9 @@ namespace EsportsDatabase
             {
                 database.Tables[database.ActiveTable].Update();
             }
-            catch (Exception)
+            catch (Exception error)
             {
-                ErrorLabel.Text = "Data update failed";
+                ErrorLabel.Text = "Data update failed. Error code: {error}";
             }
 
             ShowData(database.ActiveTable);
@@ -313,9 +313,9 @@ namespace EsportsDatabase
             {
                 database.Tables[database.ActiveTable].Delete();
             }
-            catch (Exception)
+            catch (Exception error)
             {
-                ErrorLabel.Text = "Data delete failed";
+                ErrorLabel.Text = $"Data delete failed. Error code: {error}";
             }
 
             ShowData(database.ActiveTable);
@@ -377,9 +377,6 @@ namespace EsportsDatabase
             ShowData(database.ActiveTable);
         }
 
-        
-
         public static Database database;
-
     }
 }
