@@ -372,7 +372,11 @@ namespace EsportsDatabase
                 var data = database.Query($"" + sql);
 
                 displayTable.Rows.Clear();
-
+                displayTable.ColumnCount = joinTableHeaders.Count;
+                for (int i = 0; i < joinTableHeaders.Count; i++)
+                {
+                    displayTable.Columns[i].Name = joinTableHeaders[i];
+                }
                 for (int i = 0; i < data.Count; i += (joinTableHeaders.Count))
                 {
                     displayTable.Rows.Add(data.GetRange(i, joinTableHeaders.Count).ToArray());
