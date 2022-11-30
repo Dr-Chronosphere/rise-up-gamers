@@ -23,14 +23,14 @@ namespace EsportsDatabase
             database = new Database("Esports.db",
                 @"CREATE TABLE Teams(
                     TeamID INTEGER PRIMARY KEY NOT NULL,
-                    Name TEXT, 
+                    TeamName TEXT, 
                     GameID INTEGER,
-                    Location TEXT,
+                    TeamLocation TEXT,
                     FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
                 );",
                 @"CREATE TABLE Games(
                     GameID INTEGER PRIMARY KEY NOT NULL,
-                    Name TEXT,
+                    GameName TEXT,
                     Device TEXT,
                     Type TEXT,
                     NumberOfPlayers INTEGER
@@ -53,10 +53,10 @@ namespace EsportsDatabase
                 );",
                 @"CREATE TABLE Events(
                     EventID INTEGER PRIMARY KEY NOT NULL,
-                    Name TEXT,
-                    Date TEXT,
+                    EventName TEXT,
+                    EventDate TEXT,
                     GameID INTEGER,
-                    Location TEXT,
+                    EventLocation TEXT,
                     PrizeMoney INTEGER,
                     Format TEXT,
                     FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
@@ -130,6 +130,7 @@ namespace EsportsDatabase
 
             public List<string> Query(string sql)
             {
+                currQuery = sql;
                 lastQueryResults = new List<string>();
                 Command = new SQLiteCommand(sql, Connection);
                 Reader = Command.ExecuteReader();
@@ -153,6 +154,8 @@ namespace EsportsDatabase
             public SQLiteDataReader Reader
             { get; set; }
 
+            public string currQuery;
+            public List<string> currHeaders;
             public List<string> lastQueryResults;
 
             public string ActiveTable
@@ -274,6 +277,7 @@ namespace EsportsDatabase
             {
                 displayTable.Rows.Add(data.GetRange(i, columnHeaders.Count).ToArray());
             }
+            database.currHeaders = columnHeaders;
         }
 
         private void InsertBtn_Click(object sender, EventArgs e)
@@ -323,13 +327,57 @@ namespace EsportsDatabase
             try
             {
                 List<string> tablesToJoin = new List<string>();
-                for (int i = 0; i < JoinTables.Items.Count; i++)
+                for (int i = 0; i < JoinTables.CheckedItems.Count; i++)
                 {
-                    if (JoinTables.GetItemChecked(i))
+                    tablesToJoin.Add(JoinTables.CheckedItems[i].ToString());
+                }
+                List<List<string>> allColumnHeaders = new List<List<string>>();
+                allColumnHeaders.Add(database.currHeaders);
+                foreach (var table in tablesToJoin)
+                {
+                    var columnHeaders = database.Tables[table].AllFields;
+                    allColumnHeaders.Add(columnHeaders);
+                }
+                List<string> joinTableHeaders = new List<string>();
+                foreach (var headerList in allColumnHeaders)
+                {
+                    foreach (var header in headerList)
                     {
-                        tablesToJoin.Add(JoinTables.GetItemText(i));
+                        if (!joinTableHeaders.Contains(header))
+                        {
+                            joinTableHeaders.Add(header);
+                        }
                     }
                 }
+                var sql = "";
+                if (database.currQuery.IndexOf("WHERE", 0) != -1)
+                {
+                    var sql1 = database.currQuery.Substring(0, database.currQuery.IndexOf("WHERE", 0));
+                    var sql2 = database.currQuery.Substring(database.currQuery.IndexOf("WHERE", 0));
+                    foreach (var table in tablesToJoin)
+                    {
+                        sql1 += " INNER JOIN " + table + " USING (GameID)";
+                    }
+                    sql = sql1 + sql2;
+                }
+                else
+                {
+                    sql = database.currQuery;
+                    foreach (var table in tablesToJoin)
+                    {
+                        sql += " INNER JOIN " + table + " USING (GameID)";
+                    }
+                }
+
+                var data = database.Query($"" + sql);
+
+                displayTable.Rows.Clear();
+
+                for (int i = 0; i < data.Count; i += (joinTableHeaders.Count))
+                {
+                    displayTable.Rows.Add(data.GetRange(i, joinTableHeaders.Count).ToArray());
+                }
+                database.currHeaders = joinTableHeaders;
             }
             catch (Exception error)
             {
@@ -361,6 +409,8 @@ namespace EsportsDatabase
                 {
                     displayTable.Rows.Add(data.GetRange(i, columnHeaders.Count).ToArray());
                 }
+                database.currHeaders = columnHeaders;
+
             }
             catch (Exception error)
             {
@@ -375,5 +425,7 @@ namespace EsportsDatabase
         }
 
         public static Database database;
+
+        
     }
 }
