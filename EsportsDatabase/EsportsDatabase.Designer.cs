@@ -37,6 +37,8 @@
             this.JoinTables = new System.Windows.Forms.CheckedListBox();
             this.SearchBtn = new System.Windows.Forms.Button();
             this.ErrorLabel = new System.Windows.Forms.Label();
+            this.SearchLabel = new System.Windows.Forms.Label();
+            this.JoinLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.displayTable)).BeginInit();
             this.SuspendLayout();
             // 
@@ -46,6 +48,7 @@
             this.displayTable.Location = new System.Drawing.Point(390, 12);
             this.displayTable.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.displayTable.Name = "displayTable";
+            this.displayTable.ReadOnly = true;
             this.displayTable.RowHeadersWidth = 51;
             this.displayTable.RowTemplate.Height = 24;
             this.displayTable.Size = new System.Drawing.Size(386, 427);
@@ -96,7 +99,7 @@
             // 
             // JoinBtn
             // 
-            this.JoinBtn.Location = new System.Drawing.Point(269, 317);
+            this.JoinBtn.Location = new System.Drawing.Point(269, 285);
             this.JoinBtn.Name = "JoinBtn";
             this.JoinBtn.Size = new System.Drawing.Size(115, 34);
             this.JoinBtn.TabIndex = 17;
@@ -120,7 +123,7 @@
             // 
             // SearchBtn
             // 
-            this.SearchBtn.Location = new System.Drawing.Point(29, 317);
+            this.SearchBtn.Location = new System.Drawing.Point(29, 285);
             this.SearchBtn.Name = "SearchBtn";
             this.SearchBtn.Size = new System.Drawing.Size(115, 34);
             this.SearchBtn.TabIndex = 19;
@@ -136,11 +139,33 @@
             this.ErrorLabel.Size = new System.Drawing.Size(0, 16);
             this.ErrorLabel.TabIndex = 20;
             // 
+            // SearchLabel
+            // 
+            this.SearchLabel.AutoSize = true;
+            this.SearchLabel.Location = new System.Drawing.Point(26, 322);
+            this.SearchLabel.MaximumSize = new System.Drawing.Size(120, 0);
+            this.SearchLabel.Name = "SearchLabel";
+            this.SearchLabel.Size = new System.Drawing.Size(111, 48);
+            this.SearchLabel.TabIndex = 21;
+            this.SearchLabel.Text = "Searches current table based on input values";
+            // 
+            // JoinLabel
+            // 
+            this.JoinLabel.AutoSize = true;
+            this.JoinLabel.Location = new System.Drawing.Point(269, 322);
+            this.JoinLabel.MaximumSize = new System.Drawing.Size(120, 0);
+            this.JoinLabel.Name = "JoinLabel";
+            this.JoinLabel.Size = new System.Drawing.Size(119, 80);
+            this.JoinLabel.TabIndex = 22;
+            this.JoinLabel.Text = "Joins current table with tables selected in checklist based on GameID input";
+            // 
             // EsportsDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.JoinLabel);
+            this.Controls.Add(this.SearchLabel);
             this.Controls.Add(this.ErrorLabel);
             this.Controls.Add(this.SearchBtn);
             this.Controls.Add(this.JoinTables);
@@ -170,6 +195,8 @@
         private System.Windows.Forms.CheckedListBox JoinTables;
         private System.Windows.Forms.Button SearchBtn;
         private System.Windows.Forms.Label ErrorLabel;
+        private System.Windows.Forms.Label SearchLabel;
+        private System.Windows.Forms.Label JoinLabel;
     }
 }
 
