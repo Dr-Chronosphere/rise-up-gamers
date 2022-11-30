@@ -11,6 +11,7 @@ using System.Data.SQLite;
 using static EsportsDatabase.EsportsDatabase;
 using System.Xml.Schema;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace EsportsDatabase
 {
@@ -250,16 +251,18 @@ namespace EsportsDatabase
             public TabPage Generate()
             {
                 FlowLayoutPanel flow = new FlowLayoutPanel();
-                flow.AutoScroll = true;
+                //flow.AutoScroll = true;
                 flow.Dock = DockStyle.Fill;
+                flow.FlowDirection = FlowDirection.TopDown;
 
                 foreach (string field in database.Tables[LinkedTable].AllFields)
                 {
-                    Label label = new Label();
-                    label.Text = field;
+                    var label = new Label();
+                    var fieldName = string.Join(" ", Regex.Split(field, @"(?!\A)(?<!I(?=D))(?=[A-Z])"));
+                    label.Text = fieldName;
                     flow.Controls.Add(label);
                     
-                    TextBox textbox = new TextBox();
+                    var textbox = new TextBox();
                     textbox.Name = LinkedTable + field + "Input";
                     flow.Controls.Add(textbox);
                     Inputs[field] = textbox;
@@ -295,6 +298,7 @@ namespace EsportsDatabase
                 displayTable.Rows.Add(data.GetRange(i, columnHeaders.Count).ToArray());
             }
             database.currHeaders = columnHeaders;
+            JoinBtn.Enabled = true;
         }
 
         private void InsertBtn_Click(object sender, EventArgs e)
@@ -306,7 +310,7 @@ namespace EsportsDatabase
             }
             catch(Exception error)
             {
-                ErrorLabel.Text = $"Data insert failed. Error code: {error}";
+                ErrorLabel.Text = $"Data insert failed.";
             }
             
             ShowData(database.ActiveTable);
@@ -321,7 +325,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data update failed. Error code: {error}";
+                ErrorLabel.Text = $"Data update failed.";
             }
 
             ShowData(database.ActiveTable);
@@ -336,7 +340,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data delete failed. Error code: {error}";
+                ErrorLabel.Text = $"Data delete failed.";
             }
 
             ShowData(database.ActiveTable);
@@ -403,10 +407,11 @@ namespace EsportsDatabase
                 }
                 database.currHeaders = joinTableHeaders;
                 ErrorLabel.Text = $"Table join succeeded!";
+                JoinBtn.Enabled = false;
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Table join failed. Error code: {error}";
+                ErrorLabel.Text = $"Table join failed.";
             }
 
         }
@@ -436,10 +441,11 @@ namespace EsportsDatabase
                 }
                 database.currHeaders = columnHeaders;
                 ErrorLabel.Text = $"Data search succeeded!";
+                JoinBtn.Enabled = true;
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data search failed. Error code: {error}";
+                ErrorLabel.Text = $"Data search failed.";
             }
         }
 
