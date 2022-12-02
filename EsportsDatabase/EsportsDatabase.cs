@@ -380,9 +380,17 @@ namespace EsportsDatabase
                     var sql2 = database.currQuery.Substring(database.currQuery.IndexOf("WHERE", 0));
                     foreach (var table in tablesToJoin)
                     {
-                        sql1 += " INNER JOIN " + table + " USING (GameID)";
+                       
+                        if (database.currHeaders.Contains("TeamID") && (table == "Teams" || table == "Rosters")){
+                            sql1 += "INNER JOIN " + table + " USING (GameID, TeamID)";
+                        }
+                        else
+                        {
+                            sql1 += "INNER JOIN " + table + " USING (GameID)";
+                        }
                     }
-                    sql = sql1 + sql2;
+                    
+                    sql = sql1 + " " + sql2;
                 }
                 else
                 {
