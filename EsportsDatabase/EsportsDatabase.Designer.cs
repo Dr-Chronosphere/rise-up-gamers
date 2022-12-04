@@ -45,17 +45,19 @@
             // displayTable
             // 
             this.displayTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.displayTable.Location = new System.Drawing.Point(390, 12);
+            this.displayTable.Dock = System.Windows.Forms.DockStyle.Right;
+            this.displayTable.Location = new System.Drawing.Point(414, 0);
             this.displayTable.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.displayTable.Name = "displayTable";
             this.displayTable.ReadOnly = true;
             this.displayTable.RowHeadersWidth = 51;
             this.displayTable.RowTemplate.Height = 24;
-            this.displayTable.Size = new System.Drawing.Size(386, 427);
+            this.displayTable.Size = new System.Drawing.Size(386, 450);
             this.displayTable.TabIndex = 0;
             // 
             // InsertBtn
             // 
+            this.InsertBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.InsertBtn.Location = new System.Drawing.Point(29, 405);
             this.InsertBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.InsertBtn.Name = "InsertBtn";
@@ -67,6 +69,7 @@
             // 
             // UpdateBtn
             // 
+            this.UpdateBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.UpdateBtn.Location = new System.Drawing.Point(148, 405);
             this.UpdateBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.UpdateBtn.Name = "UpdateBtn";
@@ -78,6 +81,7 @@
             // 
             // DeleteBtn
             // 
+            this.DeleteBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.DeleteBtn.Location = new System.Drawing.Point(269, 405);
             this.DeleteBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.DeleteBtn.Name = "DeleteBtn";
@@ -89,17 +93,19 @@
             // 
             // SelectTable
             // 
-            this.SelectTable.Location = new System.Drawing.Point(29, 12);
+            this.SelectTable.Dock = System.Windows.Forms.DockStyle.Top;
+            this.SelectTable.Location = new System.Drawing.Point(0, 0);
             this.SelectTable.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.SelectTable.Name = "SelectTable";
             this.SelectTable.SelectedIndex = 0;
-            this.SelectTable.Size = new System.Drawing.Size(355, 225);
+            this.SelectTable.Size = new System.Drawing.Size(414, 225);
             this.SelectTable.TabIndex = 16;
             this.SelectTable.Selected += new System.Windows.Forms.TabControlEventHandler(this.SelectTable_Selected);
             // 
             // JoinBtn
             // 
-            this.JoinBtn.Location = new System.Drawing.Point(269, 285);
+            this.JoinBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.JoinBtn.Location = new System.Drawing.Point(269, 261);
             this.JoinBtn.Name = "JoinBtn";
             this.JoinBtn.Size = new System.Drawing.Size(115, 34);
             this.JoinBtn.TabIndex = 17;
@@ -109,6 +115,7 @@
             // 
             // JoinTables
             // 
+            this.JoinTables.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.JoinTables.FormattingEnabled = true;
             this.JoinTables.Items.AddRange(new object[] {
             "Teams",
@@ -116,14 +123,15 @@
             "Players",
             "Rosters",
             "Events"});
-            this.JoinTables.Location = new System.Drawing.Point(157, 285);
+            this.JoinTables.Location = new System.Drawing.Point(157, 261);
             this.JoinTables.Name = "JoinTables";
             this.JoinTables.Size = new System.Drawing.Size(106, 106);
             this.JoinTables.TabIndex = 18;
             // 
             // SearchBtn
             // 
-            this.SearchBtn.Location = new System.Drawing.Point(29, 285);
+            this.SearchBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SearchBtn.Location = new System.Drawing.Point(29, 261);
             this.SearchBtn.Name = "SearchBtn";
             this.SearchBtn.Size = new System.Drawing.Size(115, 34);
             this.SearchBtn.TabIndex = 19;
@@ -134,15 +142,16 @@
             // ErrorLabel
             // 
             this.ErrorLabel.AutoSize = true;
-            this.ErrorLabel.Location = new System.Drawing.Point(26, 252);
+            this.ErrorLabel.Location = new System.Drawing.Point(26, 227);
             this.ErrorLabel.Name = "ErrorLabel";
             this.ErrorLabel.Size = new System.Drawing.Size(0, 16);
             this.ErrorLabel.TabIndex = 20;
             // 
             // SearchLabel
             // 
+            this.SearchLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.SearchLabel.AutoSize = true;
-            this.SearchLabel.Location = new System.Drawing.Point(26, 322);
+            this.SearchLabel.Location = new System.Drawing.Point(26, 298);
             this.SearchLabel.MaximumSize = new System.Drawing.Size(120, 0);
             this.SearchLabel.Name = "SearchLabel";
             this.SearchLabel.Size = new System.Drawing.Size(111, 48);
@@ -151,13 +160,14 @@
             // 
             // JoinLabel
             // 
+            this.JoinLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.JoinLabel.AutoSize = true;
-            this.JoinLabel.Location = new System.Drawing.Point(269, 322);
+            this.JoinLabel.Location = new System.Drawing.Point(269, 298);
             this.JoinLabel.MaximumSize = new System.Drawing.Size(120, 0);
             this.JoinLabel.Name = "JoinLabel";
             this.JoinLabel.Size = new System.Drawing.Size(119, 80);
             this.JoinLabel.TabIndex = 22;
-            this.JoinLabel.Text = "Joins current table with tables selected in checklist based on GameID input";
+            this.JoinLabel.Text = "Joins current table with tables selected in checklist based on matching GameID";
             // 
             // EsportsDatabase
             // 
