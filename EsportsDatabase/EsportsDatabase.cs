@@ -466,7 +466,14 @@ namespace EsportsDatabase
                 {
                     if (!string.IsNullOrEmpty(input.Value.Text))
                     {
-                        Filters.Add($"{input.Key} LIKE '%{input.Value.Text}%'");
+                        if (input.Value.Text.All(char.IsDigit))
+                        {
+                            Filters.Add($"{input.Key} = '{input.Value.Text}'");
+                        }
+                        else
+                        {
+                            Filters.Add($"{input.Key} LIKE '%{input.Value.Text}%'");
+                        }
                     }
                 }
                 string rowFilter = string.Join(" OR ", Filters);
