@@ -374,6 +374,7 @@ namespace EsportsDatabase
                     }
                 }
                 var sql = "";
+                bool checker = false;
                 if (database.currQuery.IndexOf("WHERE", 0) != -1)
                 {
                     var sql1 = database.currQuery.Substring(0, database.currQuery.IndexOf("WHERE", 0));
@@ -383,6 +384,18 @@ namespace EsportsDatabase
                        
                         if (database.currHeaders.Contains("TeamID") && (table == "Teams" || table == "Rosters")){
                             sql1 += "INNER JOIN " + table + " USING (GameID, TeamID)";
+                        }
+                        else if (table == "Teams" || table == "Rosters")
+                        {
+                            if (checker)
+                            {
+                                sql1 += "INNER JOIN " + table + " USING (GameID, TeamID)";
+                            }
+                            else
+                            {
+                                sql1 += "INNER JOIN " + table + " USING (GameID)";
+                                checker = true;
+                            }
                         }
                         else
                         {
@@ -397,7 +410,26 @@ namespace EsportsDatabase
                     sql = database.currQuery;
                     foreach (var table in tablesToJoin)
                     {
-                        sql += " INNER JOIN " + table + " USING (GameID)";
+                        if (database.currHeaders.Contains("TeamID") && (table == "Teams" || table == "Rosters"))
+                        {
+                            sql += " INNER JOIN " + table + " USING (GameID, TeamID)";
+                        }
+                        else if (table == "Teams" || table == "Rosters")
+                        {
+                            if (checker)
+                            {
+                                sql += " INNER JOIN " + table + " USING (GameID, TeamID)";
+                            }
+                            else
+                            {
+                                sql += " INNER JOIN " + table + " USING (GameID)";
+                                checker = true;
+                            }
+                        }
+                        else
+                        {
+                            sql += "INNER JOIN " + table + " USING (GameID)";
+                        }
                     }
                 }
 
