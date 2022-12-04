@@ -4,7 +4,7 @@ The database stores records concerning Esports teams, Esports players, and video
 ## Teams
 This table contains records for esports teams for registered games
 ### Attributes
-Attributes | Primary Key? | Foreign Key? | Constraint?
+Attribute | Primary Key? | Foreign Key? | Constraint?
 - TeamID | ✅ | ❌ | ⛔
 - TeamName | ❌ | ❌ | ⛔
 - GameID | ❌ | ✅ | Games.GameID
@@ -19,7 +19,7 @@ Yes
 ## Games
 This table contains records for esports games
 ### Attributes
-Attributes | Primary Key? | Foreign Key? | Constraint?
+Attribute | Primary Key? | Foreign Key? | Constraint?
 - GameID | ✅ | ❌ | ⛔
 - GameName | ❌ | ❌ | ⛔
 - Device | ❌ | ❌ | ⛔
@@ -33,40 +33,26 @@ Yes
 - 1 | League of Legends | PC | MOBA | 5
 - 2 | CS:GO | PC | Tactical Shooter | 5
 ## Players
-This table contains records for available players for registered games (NOTE: Available players can appear on team rosters due to buyouts and trades)
+This table contains records for players for registered games (NOTE: Players can be unassociated with a team (No TeamID))
 ### Attributes
-Attributes | Primary Key? | Foreign Key? | Constraint?
+Attribute | Primary Key? | Foreign Key? | Constraint?
 - PlayerID | ✅ | ❌ | ⛔
 - GamerTag | ❌ | ❌ | ⛔
 - FirstName | ❌ | ❌ | ⛔
 - LastName | ❌ | ❌ | ⛔
 - GameID | ❌ | ✅ | Games.GameID
-### Functional Dependencies
-PlayerID -> GamerTag, FirstName, LastName, GameID
-### In 3NF?
-Yes
-### Sample Data
-- 1 | Sneaky | Zachary | Scuderi | 1
-- 2 | MrGopher | Tobin | Hushower | 3
-## Rosters
-This table contains records for team rosters for registered games (NOTE: Available players can appear on team rosters due to buyouts and trades)
-### Attributes
-Attributes | Primary Key? | Foreign Key? | Constraint?
-- RosterID | ✅ | ❌ | ⛔
 - TeamID | ❌ | ✅ | Teams.TeamID
-- GameID | ❌ | ✅ | Games.GameID
-- ListOfPlayers | ❌ | ❌ | ⛔
 ### Functional Dependencies
-RosterID -> TeamID, GameID, ListOfPlayers
+PlayerID -> GamerTag, FirstName, LastName, GameID, TeamID
 ### In 3NF?
 Yes
 ### Sample Data
-- 1 | 1 | 1 | Fudge, Blaber, Jensen, Berseker, Zven
-- 4 | 3 | 5 | Eloise
+- 1 | Sneaky | Zachary | Scuderi | 1 | 1
+- 2 | MrGopher | Tobin | Hushower | 3 | 4
 ## Events
 This table contains records for esports events for registered games
 ### Attributes
-Attributes | Primary Key? | Foreign Key? | Constraint?
+Attribute | Primary Key? | Foreign Key? | Constraint?
 - EventID | ✅ | ❌ | ⛔
 - EventName | ❌ | ❌ | ⛔
 - EventDate | ❌ | ❌ | ⛔
