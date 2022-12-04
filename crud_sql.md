@@ -16,7 +16,7 @@ public void Insert()
 ```sql
 INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES (@TeamName, @GameID, @TeamLocation)
 INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES (@GameName, @Device, @Type, @NumberOfPlayers)
-INSERT INTO Players (GamerTag, FirstName, LastName, GameID, AssociatedTeam) VALUES (@GamerTag, @FirstName, @LastName, @GameID, @AssociatedTeam)
+INSERT INTO Players (GamerTag, FirstName, LastName, GameID, TeamID) VALUES (@GamerTag, @FirstName, @LastName, @GameID, @TeamID)
 INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES (@TeamName, @GameID, @TeamLocation)
 ```
 # Update
@@ -39,7 +39,7 @@ public void Update()
 ```sql
 UPDATE Teams SET TeamName = @TeamName, GameID = @GameID, TeamLocation = @TeamLocation WHERE TeamID = @TeamID
 UPDATE Games SET GameName = @GameName, Device = @Deivce, NumberOfPlayers = @NumberOfPlayers WHERE GameID = @GameID
-UPDATE Players SET GamerTag = @GamerTag, FirstName = @FirstName, LastName = @LastName, GameId = @GameID, AssociatedTeam = @AssociatedTeam WHERE PlayerID = @PlayerID
+UPDATE Players SET GamerTag = @GamerTag, FirstName = @FirstName, LastName = @LastName, GameId = @GameID, TeamID = @TeamID WHERE PlayerID = @PlayerID
 UPDATE Events SET EventName = @EventName, EventDate = @EventDate, GameID = @GameID, EventLocation = @EventLocation, PrizeMoney = @PrizeMoney, Format = @Format WHERE EventID = @EventID
 ```
 # Delete
