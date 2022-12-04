@@ -42,15 +42,9 @@ namespace EsportsDatabase
                     FirstName TEXT,
                     LastName TEXT,
                     GameID INTEGER,
-                    FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
-                );",
-                @"CREATE TABLE Rosters(
-                    RosterID INTEGER PRIMARY KEY NOT NULL,
                     TeamID INTEGER,
-                    GameID INTEGER,
-                    ListOfPlayers TEXT,
-                    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE,
-                    FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE,
+                    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID) ON DELETE CASCADE
                 );",
                 @"CREATE TABLE Events(
                     EventID INTEGER PRIMARY KEY NOT NULL,
@@ -99,7 +93,7 @@ namespace EsportsDatabase
             public bool Create()
             {
                 if (!System.IO.File.Exists(_filename))
-                { 
+                {
                     SQLiteConnection.CreateFile(_filename);
                     Connection.Open();
                     foreach (string sql in _creationSQL)
@@ -114,8 +108,7 @@ namespace EsportsDatabase
                     List<List<string>> initialData = new List<List<string>>();
                     initialData.Add(new List<string> { "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('League of Legends', 'PC', 'MOBA', 5)", "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('CS:GO', 'PC', 'Tactical Shooter', 5)", "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('Rocket League', 'Cross-Platform', 'Sports', 3)", "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('Fortnite', 'Cross-Platform', 'Battle Royale', 4)", "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('Hearthstone', 'PC', 'Card', 1)" });
                     initialData.Add(new List<string> { "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Cloud 9', 1, 'California, USA')", "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Cloud 9', 2, 'California, USA')", "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Tempo Storm', 5, 'Los Angeles, California, USA')", "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Wichita State', 3, 'Wichita, Kansas, USA')", "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Team Liquid', 1, 'California, USA')" });
-                    initialData.Add(new List<string> { "INSERT INTO Players (GamerTag, FirstName, LastName, GameID) VALUES ('Sneaky', 'Zachary', 'Scuderi', 1)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID) VALUES ('MrGopher', 'Tobin', 'Hushower', 3)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID) VALUES ('S1mple', 'Natus', 'Vincere', 2)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID) VALUES ('Mero', 'Matthew', 'Faitel', 4)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID) VALUES ('Reynad', 'Andrey', 'Yanyuk', 5)" });
-                    initialData.Add(new List<string> { "INSERT INTO Rosters (TeamID, GameID, ListOfPlayers) VALUES (1, 1, 'Fudge, Blaber, Jensen, Berserker, Zven')", "INSERT INTO Rosters (TeamID, GameID, ListOfPlayers) VALUES (3, 3, 'Actual Quarter, Pibro3, GiffyA')", "INSERT INTO Rosters (TeamID, GameID, ListOfPlayers) VALUES (5, 1, 'Bwipo, Santorin, Bjergsen, Hans sama, CoreJJ')", "INSERT INTO Rosters (TeamID, GameID, ListOfPlayers) VALUES (3, 5, 'Eloise')", "INSERT INTO Rosters (TeamID, GameID, ListOfPlayers) VALUES (2, 2, 'nafany, HObbitt, interz, Ax1Le, sh1ro')" });
+                    initialData.Add(new List<string> { "INSERT INTO Players (GamerTag, FirstName, LastName, GameID, TeamID) VALUES ('Sneaky', 'Zachary', 'Scuderi', 1, 1)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID, TeamID) VALUES ('MrGopher', 'Tobin', 'Hushower', 3, 4)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID) VALUES ('S1mple', 'Natus', 'Vincere', 2)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID) VALUES ('Mero', 'Matthew', 'Faitel', 4)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID, TeamID) VALUES ('Reynad', 'Andrey', 'Yanyuk', 5, 3)" });
                     initialData.Add(new List<string> { "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('LOL Worlds Championship', 'September 29, 2022', 1, 'New York City, New York, USA', 2230000, 'Single Elimination')", "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('LOL MSI', 'May 10, 2022', 1, 'Busan, South Korea', 250000, 'Single Elimination')", "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('RLCS Worlds Championship', 'August 4, 2022', 3, 'Fort Worth, Texas, USA', 2085000, 'Double Elimination into Single Elimination')", "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('Fortnite World Cup', 'November 12, 2022', 4, 'Raleigh, North Carolina, USA', 1000000, 'Points System into Single Elimination')", "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('BLAST Premier: Fall Finals 2022', 'November 23, 2022', 2, 'Copenhagen, Denmark', 425000, 'Single Elimination')" });
                     foreach (var tableData in initialData)
                     {
@@ -139,7 +132,7 @@ namespace EsportsDatabase
             {
                 Tables = new Dictionary<string, Table>();
                 Query("SELECT name FROM sqlite_schema WHERE type = 'table';");
-                foreach(string tableName in lastQueryResults)
+                foreach (string tableName in lastQueryResults)
                 {
                     Tables[tableName] = new Table(tableName);
                 }
@@ -257,12 +250,11 @@ namespace EsportsDatabase
 
                 foreach (string field in database.Tables[LinkedTable].AllFields)
                 {
-                    var label = new Label();
-                    var fieldName = string.Join(" ", Regex.Split(field, @"(?!\A)(?<!I(?=D))(?=[A-Z])"));
-                    label.Text = fieldName;
+                    Label label = new Label();
+                    label.Text = field;
                     flow.Controls.Add(label);
-                    
-                    var textbox = new TextBox();
+
+                    TextBox textbox = new TextBox();
                     textbox.Name = LinkedTable + field + "Input";
                     flow.Controls.Add(textbox);
                     Inputs[field] = textbox;
@@ -302,17 +294,17 @@ namespace EsportsDatabase
         }
 
         private void InsertBtn_Click(object sender, EventArgs e)
-        { 
+        {
             try
-            { 
+            {
                 database.Tables[database.ActiveTable].Insert();
                 ErrorLabel.Text = $"Data insert succeeded!";
             }
-            catch(Exception error)
+            catch (Exception error)
             {
-                ErrorLabel.Text = $"Data insert failed.";
+                ErrorLabel.Text = $"Data insert failed. Error code: {error}";
             }
-            
+
             ShowData(database.ActiveTable);
         }
 
@@ -325,7 +317,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data update failed.";
+                ErrorLabel.Text = $"Data update failed. Error code: {error}";
             }
 
             ShowData(database.ActiveTable);
@@ -340,7 +332,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data delete failed.";
+                ErrorLabel.Text = $"Data delete failed. Error code: {error}";
             }
 
             ShowData(database.ActiveTable);
@@ -381,11 +373,12 @@ namespace EsportsDatabase
                     var sql2 = database.currQuery.Substring(database.currQuery.IndexOf("WHERE", 0));
                     foreach (var table in tablesToJoin)
                     {
-                       
-                        if (database.currHeaders.Contains("TeamID") && (table == "Teams" || table == "Rosters")){
+
+                        if (database.currHeaders.Contains("TeamID") && (table == "Teams" || table == "Players"))
+                        {
                             sql1 += "INNER JOIN " + table + " USING (GameID, TeamID)";
                         }
-                        else if (table == "Teams" || table == "Rosters")
+                        else if (table == "Teams" || table == "Players")
                         {
                             if (checker)
                             {
@@ -402,7 +395,7 @@ namespace EsportsDatabase
                             sql1 += "INNER JOIN " + table + " USING (GameID)";
                         }
                     }
-                    
+
                     sql = sql1 + " " + sql2;
                 }
                 else
@@ -410,11 +403,11 @@ namespace EsportsDatabase
                     sql = database.currQuery;
                     foreach (var table in tablesToJoin)
                     {
-                        if (database.currHeaders.Contains("TeamID") && (table == "Teams" || table == "Rosters"))
+                        if (database.currHeaders.Contains("TeamID") && (table == "Teams" || table == "Players"))
                         {
                             sql += " INNER JOIN " + table + " USING (GameID, TeamID)";
                         }
-                        else if (table == "Teams" || table == "Rosters")
+                        else if (table == "Teams" || table == "Players")
                         {
                             if (checker)
                             {
@@ -451,7 +444,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Table join failed.";
+                ErrorLabel.Text = $"Table join failed. Error code: {error}";
             }
 
         }
@@ -485,7 +478,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data search failed.";
+                ErrorLabel.Text = $"Data search failed. Error code: {error}";
             }
         }
 
@@ -497,6 +490,6 @@ namespace EsportsDatabase
 
         public static Database database;
 
-        
+
     }
 }
