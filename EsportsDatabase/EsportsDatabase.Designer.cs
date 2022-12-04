@@ -114,7 +114,6 @@
             "Teams",
             "Games",
             "Players",
-            "Rosters",
             "Events"});
             this.JoinTables.Location = new System.Drawing.Point(157, 285);
             this.JoinTables.Name = "JoinTables";
