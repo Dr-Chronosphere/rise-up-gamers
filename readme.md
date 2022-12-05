@@ -4,4 +4,4 @@
 Philip Lindholm - Dr-Chronosphere
 Logan Hutchens - lih0612
 # Demo Video
-[(133) CS 665 Database Project Demo - YouTube](https://www.youtube.com/watch?v=SJ-1SSgiPpc)
+[(125) Database Project Demo CS 665 - YouTube](https://www.youtube.com/watch?v=SJ-1SSgiPpc)
