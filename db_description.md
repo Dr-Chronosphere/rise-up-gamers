@@ -80,6 +80,8 @@ Attribute | Primary Key? | Foreign Key? | Constraint?
 - EventLocation | ❌ | ❌ | ⛔
 - PrizeMoney | ❌ | ❌ | ⛔
 - Format | ❌ | ❌ | ⛔
+### Foreign Key Triggers/Effects
+- On deletion of game from Games table, cascade where Games.GameID = Teams.GameID
 ### Functional Dependencies
 EventID -> EventName, EventDate, GameID, EventLocation, PrizeMoney
 ### In 3NF?
