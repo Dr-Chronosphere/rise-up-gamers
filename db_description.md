@@ -39,6 +39,9 @@ Attribute | Primary Key? | Foreign Key? | Constraint?
 - TeamID | ✅ | ❌ | ⛔
 - OrganizationID | ❌ | ✅ | Organizations.OrganizationID
 - GameID | ❌ | ✅ | Games.GamesID
+### Foreign Key Triggers/Effects
+- On deletion of an organization from Organizations table, cascade where Organizations.OrganizationID = Teams.OrganizationID
+- On deletion of game from Games table, cascade where Games.GameID = Teams.GameID
 ### Functional Dependencies
 TeamID -> OrganizationID, GameID
 ### In 3NF?
@@ -56,6 +59,9 @@ Attribute | Primary Key? | Foreign Key? | Constraint?
 - LastName | ❌ | ❌ | ⛔
 - GameID | ❌ | ✅ | Games.GameID
 - TeamID | ❌ | ✅ | Teams.TeamID
+### Foreign Key Triggers/Effects
+- On deletion of game from Games table, cascade where Games.GameID = Teams.GameID
+- On deletion of team from Teams table, cascade where Teams.TeamID = Players.TeamID
 ### Functional Dependencies
 PlayerID -> GamerTag, FirstName, LastName, GameID, TeamID
 ### In 3NF?
