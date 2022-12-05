@@ -14,10 +14,11 @@ public void Insert()
 ### SQL
 @values are filled in upon execution of sql
 ```sql
-INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES (@TeamName, @GameID, @TeamLocation)
-INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES (@GameName, @Device, @Type, @NumberOfPlayers)
-INSERT INTO Players (GamerTag, FirstName, LastName, GameID, TeamID) VALUES (@GamerTag, @FirstName, @LastName, @GameID, @TeamID)
-INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES (@TeamName, @GameID, @TeamLocation)
+INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES (@GameName, @Device, @Type, @NumberOfPlayers);
+INSERT INTO Organizations (OrganizationName, OrganizationLocation, YearFounded) VALUES (@OrganizationName, @OrganizationLocation, @YearFounded);
+INSERT INTO Teams (OrganizationID, GameID) VALUES (@OrganizationID, @GameID);
+INSERT INTO Players (GamerTag, FirstName, LastName, GameID, TeamID) VALUES (@GamerTag, @FirstName, @LastName, @GameID, @TeamID);
+INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES (@TeamName, @GameID, @TeamLocation);
 ```
 # Update
 ### C#
@@ -37,10 +38,11 @@ public void Update()
 ### SQL
 @values are filled in upon execution of sql
 ```sql
-UPDATE Teams SET TeamName = @TeamName, GameID = @GameID, TeamLocation = @TeamLocation WHERE TeamID = @TeamID
-UPDATE Games SET GameName = @GameName, Device = @Deivce, NumberOfPlayers = @NumberOfPlayers WHERE GameID = @GameID
-UPDATE Players SET GamerTag = @GamerTag, FirstName = @FirstName, LastName = @LastName, GameId = @GameID, TeamID = @TeamID WHERE PlayerID = @PlayerID
-UPDATE Events SET EventName = @EventName, EventDate = @EventDate, GameID = @GameID, EventLocation = @EventLocation, PrizeMoney = @PrizeMoney, Format = @Format WHERE EventID = @EventID
+UPDATE Games SET GameName = @GameName, Device = @Deivce, NumberOfPlayers = @NumberOfPlayers WHERE GameID = @GameID;
+UPDATE Organizations SET OrganizationName = @OrganizationName, OrganizationLocation = @OrganizationLocation, YearFounded = @YearFounded WHERE OrganizationID = @OrganizationID;
+UPDATE Teams SET OrganizationID = @OrganizationID, GameID = @GameID WHERE TeamID = @TeamID;
+UPDATE Players SET GamerTag = @GamerTag, FirstName = @FirstName, LastName = @LastName, GameId = @GameID, TeamID = @TeamID WHERE PlayerID = @PlayerID;
+UPDATE Events SET EventName = @EventName, EventDate = @EventDate, GameID = @GameID, EventLocation = @EventLocation, PrizeMoney = @PrizeMoney, Format = @Format WHERE EventID = @EventID;
 ```
 # Delete
 ### C#
@@ -54,8 +56,9 @@ public void Delete()
 ### SQL
 @values are filled in upon execution of sql
 ```sql
-DELETE FROM Teams WHERE TeamID = @TeamID
-DELETE FROM Games WHERE TeamID = @GameID
-DELETE FROM Players WHERE TeamID = @PlayerID
-DELETE FROM Events WHERE TeamID = @EventID
+DELETE FROM Games WHERE TeamID = @GameID;
+DELETE FROM Organizations WHERE OrganizationID = @OrganizationID;
+DELETE FROM Teams WHERE TeamID = @TeamID;
+DELETE FROM Players WHERE TeamID = @PlayerID;
+DELETE FROM Events WHERE TeamID = @EventID;
 ```
