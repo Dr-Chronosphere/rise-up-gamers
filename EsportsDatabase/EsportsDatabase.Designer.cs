@@ -118,14 +118,14 @@
             this.JoinTables.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.JoinTables.FormattingEnabled = true;
             this.JoinTables.Items.AddRange(new object[] {
-            "Teams",
             "Games",
+            "Organizations",
+            "Teams",
             "Players",
-            "Rosters",
             "Events"});
-            this.JoinTables.Location = new System.Drawing.Point(157, 261);
+            this.JoinTables.Location = new System.Drawing.Point(148, 261);
             this.JoinTables.Name = "JoinTables";
-            this.JoinTables.Size = new System.Drawing.Size(106, 106);
+            this.JoinTables.Size = new System.Drawing.Size(115, 106);
             this.JoinTables.TabIndex = 18;
             // 
             // SearchBtn
@@ -165,9 +165,9 @@
             this.JoinLabel.Location = new System.Drawing.Point(269, 298);
             this.JoinLabel.MaximumSize = new System.Drawing.Size(120, 0);
             this.JoinLabel.Name = "JoinLabel";
-            this.JoinLabel.Size = new System.Drawing.Size(119, 80);
+            this.JoinLabel.Size = new System.Drawing.Size(118, 80);
             this.JoinLabel.TabIndex = 22;
-            this.JoinLabel.Text = "Joins current table with tables selected in checklist based on matching GameID";
+            this.JoinLabel.Text = "Joins current table with tables selected tables based on matching fields";
             // 
             // EsportsDatabase
             // 

@@ -22,19 +22,25 @@ namespace EsportsDatabase
             // Much easier constructor-based database initialization.
             // Consider making database constructor alter/add to existing database object.
             database = new Database("Esports.db",
-                @"CREATE TABLE Teams(
-                    TeamID INTEGER PRIMARY KEY NOT NULL,
-                    TeamName TEXT, 
-                    GameID INTEGER,
-                    TeamLocation TEXT,
-                    FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
-                );",
                 @"CREATE TABLE Games(
                     GameID INTEGER PRIMARY KEY NOT NULL,
                     GameName TEXT,
                     Device TEXT,
                     Type TEXT,
                     NumberOfPlayers INTEGER
+                );",
+                @"CREATE TABLE Organizations(
+                    OrganizationID INTEGER PRIMARY KEY NOT NULL,
+                    OrganizationName TEXT, 
+                    OrganizationLocation TEXT,
+                    YearFounded INTEGER            
+                );",
+                @"CREATE TABLE Teams(
+                    TeamID INTEGER PRIMARY KEY NOT NULL,
+                    OrganizationID INTEGER,
+                    GameID INTEGER,
+                    FOREIGN KEY (OrganizationID) REFERENCES Organizations(OrganizationID) ON DELETE CASCADE,
+                    FOREIGN KEY (GameID) REFERENCES Games(GameID) ON DELETE CASCADE
                 );",
                 @"CREATE TABLE Players(
                     PlayerID INTEGER PRIMARY KEY NOT NULL,
@@ -107,7 +113,8 @@ namespace EsportsDatabase
                     // Initialize data
                     List<List<string>> initialData = new List<List<string>>();
                     initialData.Add(new List<string> { "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('League of Legends', 'PC', 'MOBA', 5)", "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('CS:GO', 'PC', 'Tactical Shooter', 5)", "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('Rocket League', 'Cross-Platform', 'Sports', 3)", "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('Fortnite', 'Cross-Platform', 'Battle Royale', 4)", "INSERT INTO Games (GameName, Device, Type, NumberOfPlayers) VALUES ('Hearthstone', 'PC', 'Card', 1)" });
-                    initialData.Add(new List<string> { "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Cloud 9', 1, 'California, USA')", "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Cloud 9', 2, 'California, USA')", "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Tempo Storm', 5, 'Los Angeles, California, USA')", "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Wichita State', 3, 'Wichita, Kansas, USA')", "INSERT INTO Teams (TeamName, GameID, TeamLocation) VALUES ('Team Liquid', 1, 'California, USA')" });
+                    initialData.Add(new List<string> { "INSERT INTO Organizations (OrganizationName, OrganizationLocation, YearFounded) VALUES ('Cloud 9', 'California, USA', 2013)", "INSERT INTO Organizations (OrganizationName, OrganizationLocation, YearFounded) VALUES ('Fnatic', 'London, UK', 2004)", "INSERT INTO Organizations (OrganizationName, OrganizationLocation, YearFounded) VALUES ('Tempo Storm', 'Los Angeles, California, USA', 2014)", "INSERT INTO Organizations (OrganizationName, OrganizationLocation, YearFounded) VALUES ('Wichita State', 'Wichita, Kansas, USA', 2019)", "INSERT INTO Organizations (OrganizationName, OrganizationLocation, YearFounded) VALUES ('Team Liquid', 'California, USA', 2000)" });
+                    initialData.Add(new List<string> { "INSERT INTO Teams (OrganizationID, GameID) VALUES (1, 1)", "INSERT INTO Teams (OrganizationID, GameID) VALUES (1, 2)", "INSERT INTO Teams (OrganizationID, GameID) VALUES (2, 1)", "INSERT INTO Teams (OrganizationID, GameID) VALUES (4, 3)", "INSERT INTO Teams (OrganizationID, GameID) VALUES (3, 5)" });
                     initialData.Add(new List<string> { "INSERT INTO Players (GamerTag, FirstName, LastName, GameID, TeamID) VALUES ('Sneaky', 'Zachary', 'Scuderi', 1, 1)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID, TeamID) VALUES ('MrGopher', 'Tobin', 'Hushower', 3, 4)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID) VALUES ('S1mple', 'Natus', 'Vincere', 2)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID) VALUES ('Mero', 'Matthew', 'Faitel', 4)", "INSERT INTO Players (GamerTag, FirstName, LastName, GameID, TeamID) VALUES ('Reynad', 'Andrey', 'Yanyuk', 5, 3)" });
                     initialData.Add(new List<string> { "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('LOL Worlds Championship', 'September 29, 2022', 1, 'New York City, New York, USA', 2230000, 'Single Elimination')", "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('LOL MSI', 'May 10, 2022', 1, 'Busan, South Korea', 250000, 'Single Elimination')", "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('RLCS Worlds Championship', 'August 4, 2022', 3, 'Fort Worth, Texas, USA', 2085000, 'Double Elimination into Single Elimination')", "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('Fortnite World Cup', 'November 12, 2022', 4, 'Raleigh, North Carolina, USA', 1000000, 'Points System into Single Elimination')", "INSERT INTO Events (EventName, EventDate, GameID, EventLocation, PrizeMoney, Format) VALUES ('BLAST Premier: Fall Finals 2022', 'November 23, 2022', 2, 'Copenhagen, Denmark', 425000, 'Single Elimination')" });
                     foreach (var tableData in initialData)
@@ -302,7 +309,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data insert failed. Error code: {error}";
+                ErrorLabel.Text = $"Data insert failed.";
             }
 
             ShowData(database.ActiveTable);
@@ -317,7 +324,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data update failed. Error code: {error}";
+                ErrorLabel.Text = $"Data update failed.";
             }
 
             ShowData(database.ActiveTable);
@@ -332,7 +339,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data delete failed. Error code: {error}";
+                ErrorLabel.Text = $"Data delete failed.";
             }
 
             ShowData(database.ActiveTable);
@@ -366,33 +373,111 @@ namespace EsportsDatabase
                     }
                 }
                 var sql = "";
-                bool checker = false;
+                bool teamIDChecker = false;
+                bool orgChecker = false;
+                bool firstJoinOnOrgChecker = false;
                 if (database.currQuery.IndexOf("WHERE", 0) != -1)
                 {
                     var sql1 = database.currQuery.Substring(0, database.currQuery.IndexOf("WHERE", 0));
                     var sql2 = database.currQuery.Substring(database.currQuery.IndexOf("WHERE", 0));
+                    sql1 = sql1.TrimEnd();
+                    if(database.ActiveTable == "Teams" || database.ActiveTable == "Players")
+                    {
+                        teamIDChecker = true;
+                    }
                     foreach (var table in tablesToJoin)
                     {
+                        if (table == database.ActiveTable)
+                        {
 
-                        if (database.currHeaders.Contains("TeamID") && (table == "Teams" || table == "Players"))
-                        {
-                            sql1 += "INNER JOIN " + table + " USING (GameID, TeamID)";
                         }
-                        else if (table == "Teams" || table == "Players")
+                        else if (database.ActiveTable == "Organizations")
                         {
-                            if (checker)
+                            if (!firstJoinOnOrgChecker && table != "Teams")
                             {
-                                sql1 += "INNER JOIN " + table + " USING (GameID, TeamID)";
+                                if (table == "Players")
+                                {
+                                    sql1 += " INNER JOIN (SELECT * FROM " + table + " INNER JOIN Teams USING (TeamID)) USING (OrganizationID)";
+                                }
+                                else
+                                {
+                                    sql1 += " INNER JOIN (SELECT * FROM " + table + " INNER JOIN Teams USING (GameID)) USING (OrganizationID)";
+                                }
+                                firstJoinOnOrgChecker = true;
+                                joinTableHeaders.Add("TeamID");
+                            }
+                            else if (!firstJoinOnOrgChecker && table == "Teams")
+                            {
+                                sql1 += " INNER JOIN " + table + " USING (OrganizationID)";
+                                firstJoinOnOrgChecker = true;
+                            }
+                            else if (table == "Players")
+                            {
+                                sql1 += " INNER JOIN " + table + " USING (TeamID, GameID)";
+                            }
+                            else if (table == "Teams")
+                            {
+                                sql1 += " INNER JOIN " + table + " USING (OrganizationID)";
                             }
                             else
                             {
-                                sql1 += "INNER JOIN " + table + " USING (GameID)";
-                                checker = true;
+                                sql1 += " INNER JOIN " + table + " USING (GameID)";
                             }
+
                         }
                         else
                         {
-                            sql1 += "INNER JOIN " + table + " USING (GameID)";
+                            if (teamIDChecker && table == "Teams" || table == "Players")
+                            {
+                                sql1 += " INNER JOIN " + table + " USING (GameID, TeamID)";
+                            }
+                            else if (table == "Teams" || table == "Players")
+                            {
+                                if (orgChecker && table == "Teams")
+                                {
+                                    sql1 += " INNER JOIN " + table + " USING (GameID, TeamID, OrganizationID)";
+                                }
+                                else if (teamIDChecker)
+                                {
+                                    sql1 += " INNER JOIN " + table + " USING (GameID, TeamID)";
+                                }
+                                else
+                                {
+                                    sql1 += " INNER JOIN " + table + " USING (GameID)";
+                                    teamIDChecker = true;
+                                }
+                            }
+                            else if (table == "Organizations")
+                            {
+                                if (database.ActiveTable == "Teams")
+                                {
+                                    sql1 += " INNER JOIN Organizations USING (OrganizationID)";
+                                    teamIDChecker = true;
+                                }
+                                else
+                                {
+                                    if (teamIDChecker)
+                                    {
+                                        sql1 += " INNER JOIN (SELECT * FROM " + table + " INNER JOIN Teams USING (OrganizationID)) USING (GameID, TeamID)";
+
+                                    }
+                                    else
+                                    {
+                                        sql1 += " INNER JOIN (SELECT * FROM " + table + " INNER JOIN Teams USING (OrganizationID)) USING (GameID)";
+
+                                    }
+                                }
+                                if (!joinTableHeaders.Contains("TeamID"))
+                                {
+                                    joinTableHeaders.Add("TeamID");
+                                }
+                                orgChecker = true;
+                            }
+                            else
+                            {
+                                sql1 += " INNER JOIN " + table + " USING (GameID)";
+
+                            }
                         }
                     }
 
@@ -403,33 +488,109 @@ namespace EsportsDatabase
                     sql = database.currQuery;
                     foreach (var table in tablesToJoin)
                     {
-                        if (database.currHeaders.Contains("TeamID") && (table == "Teams" || table == "Players"))
+                        if (table == database.ActiveTable)
                         {
-                            sql += " INNER JOIN " + table + " USING (GameID, TeamID)";
+
                         }
-                        else if (table == "Teams" || table == "Players")
+                        else if (database.ActiveTable == "Organizations")
                         {
-                            if (checker)
+                            if(!firstJoinOnOrgChecker && table != "Teams")
                             {
-                                sql += " INNER JOIN " + table + " USING (GameID, TeamID)";
+                                if(table == "Players")
+                                {
+                                    sql += " INNER JOIN (SELECT * FROM " + table + " INNER JOIN Teams USING (TeamID)) USING (OrganizationID)";
+                                }
+                                else
+                                {
+                                    sql += " INNER JOIN (SELECT * FROM " + table + " INNER JOIN Teams USING (GameID)) USING (OrganizationID)";
+                                }
+                                firstJoinOnOrgChecker = true;
+                                joinTableHeaders.Add("TeamID");
+                            }
+                            else if (!firstJoinOnOrgChecker && table == "Teams")
+                            {
+                                sql += " INNER JOIN " + table + " USING (OrganizationID)";
+                                firstJoinOnOrgChecker = true;
+                            }
+                            else if (table == "Players")
+                            {
+                                sql += " INNER JOIN " + table + " USING (TeamID, GameID)";
+                            }
+                            else if (table == "Teams")
+                            {
+                                sql += " INNER JOIN " + table + " USING (OrganizationID)";
                             }
                             else
                             {
                                 sql += " INNER JOIN " + table + " USING (GameID)";
-                                checker = true;
                             }
+
                         }
                         else
                         {
-                            sql += "INNER JOIN " + table + " USING (GameID)";
+                            if (teamIDChecker && table == "Teams" || table == "Players")
+                            {
+                                sql += " INNER JOIN " + table + " USING (GameID, TeamID)";
+                            }
+                            else if (table == "Teams" || table == "Players")
+                            {
+                                if (orgChecker && table == "Teams")
+                                {
+                                    sql += " INNER JOIN " + table + " USING (GameID, TeamID, OrganizationID)";
+                                }
+                                else if (teamIDChecker)
+                                {
+                                    sql += " INNER JOIN " + table + " USING (GameID, TeamID)";
+                                }
+                                else
+                                {
+                                    sql += " INNER JOIN " + table + " USING (GameID)";
+                                    teamIDChecker = true;
+                                }
+                            }
+                            else if (table == "Organizations")
+                            {
+                                if (database.ActiveTable == "Teams")
+                                {
+                                    sql += " INNER JOIN Organizations USING (OrganizationID)";
+                                    teamIDChecker = true;
+                                }
+                                else
+                                {
+                                    if (teamIDChecker)
+                                    {
+                                        sql += " INNER JOIN (SELECT * FROM " + table + " INNER JOIN Teams USING (OrganizationID)) USING (GameID, TeamID)";
+
+                                    }
+                                    else
+                                    {
+                                        sql += " INNER JOIN (SELECT * FROM " + table + " INNER JOIN Teams USING (OrganizationID)) USING (GameID)";
+                                    }
+                                }
+                                if (!joinTableHeaders.Contains("TeamID"))
+                                {
+                                    joinTableHeaders.Add("TeamID");
+                                }
+                                orgChecker = true;
+                            }
+                            else
+                            {
+                                sql += " INNER JOIN " + table + " USING (GameID)";
+
+                            }
                         }
                     }
+                }
+                if(tablesToJoin.Count == 1 && tablesToJoin.Contains(database.ActiveTable))
+                {
+                    sql = database.currQuery;
                 }
 
                 var data = database.Query($"" + sql);
 
                 displayTable.Rows.Clear();
                 displayTable.ColumnCount = joinTableHeaders.Count;
+
                 for (int i = 0; i < joinTableHeaders.Count; i++)
                 {
                     displayTable.Columns[i].Name = joinTableHeaders[i];
@@ -444,7 +605,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Table join failed. Error code: {error}";
+                ErrorLabel.Text = $"Table join failed.";
             }
 
         }
@@ -478,7 +639,7 @@ namespace EsportsDatabase
             }
             catch (Exception error)
             {
-                ErrorLabel.Text = $"Data search failed. Error code: {error}";
+                ErrorLabel.Text = $"Data search failed.";
             }
         }
 
